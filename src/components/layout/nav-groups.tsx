@@ -4,7 +4,7 @@
 import { useEffect, useState, useMemo } from "react";
 import Link from "next/link";
 import { Grip, Plus, Tag } from "lucide-react";
-import { Group, GoalWithProgress, Categories } from "@/types/types";
+import { Group, Categories } from "@/types/types";
 import { Skeleton } from "../ui/skeleton";
 import { SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuAction, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar";
 import { usePathname } from "next/navigation";
@@ -13,7 +13,6 @@ import { useRouter } from "next/navigation";
 export function NavGroups({ onAddGroup, onGroupsLoad }: { onAddGroup: () => void; onGroupsLoad: (groups: Group[]) => void }) {
   const [groups, setGroups] = useState<Group[]>([]);
   const [categories, setCategories] = useState<Categories[]>([]);
-  const [, setGoals] = useState<GoalWithProgress[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const pathname = usePathname();
   const router = useRouter();
@@ -21,15 +20,14 @@ export function NavGroups({ onAddGroup, onGroupsLoad }: { onAddGroup: () => void
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [groupsRes, goalsRes, categoriesRes] = await Promise.all([ fetch("/api/groups"), fetch("/api/goals"), fetch("/api/categories") ]);
+        const [groupsRes,  categoriesRes] = await Promise.all([ fetch("/api/groups"), fetch("/api/categories") ]);
         const groupsData = await groupsRes.json();
-        const goalsData = await goalsRes.json();
+        // const goalsData = await goalsRes.json();
         const categoriesData = await categoriesRes.json();
 
         setGroups(groupsData);
         setCategories(categoriesData);
         onGroupsLoad(groupsData);
-        setGoals(goalsData);
       } catch (error) {
         console.error("Failed to fetch sidebar data", error);
       } finally {
