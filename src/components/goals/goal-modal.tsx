@@ -46,7 +46,7 @@ export default function GoalModal({ isOpen, onClose, goal, groups, categories }:
       description: goal?.description || "",
       groupId: goal?.groupId || "",
       color: goal?.color || "#2563eb",
-      categoryId: goal?.categoryId ,
+      categoryId: goal?.categoryId || "",
       startAt: goal ? new Date(goal.startAt as Date).toISOString().split('T')[0] : "",
       endAt: goal ? new Date(goal.endAt as Date).toISOString().split('T')[0] : "",
       steps: goal?.steps?.length ? goal.steps.map(s => ({ description: s.description })) : [{ description: "" }],
