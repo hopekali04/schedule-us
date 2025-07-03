@@ -25,7 +25,7 @@ async function getGroupData(groupId: string): Promise<{ group: Group; goals: Goa
             fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/categories`, { headers: { Cookie: `session=${session}` }, cache: 'no-store' })
         ]);
 
-        if (!groupRes.ok || !goalsRes.ok) return null;
+        if (!groupRes.ok || !goalsRes.ok || !categoryRes.ok) return null;
 
         const allGroups: Group[] = await groupRes.json();
         const allGoals: GoalWithProgress[] = await goalsRes.json();
