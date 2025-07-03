@@ -40,15 +40,11 @@ export function NavGroups({ onAddGroup, onGroupsLoad }: { onAddGroup: () => void
   }, [pathname, router, onGroupsLoad]);
 
   const goalCategories = useMemo(() => {
-    const categoryMap = new Map<string, { color: string }>();
-    categories.forEach((data) => {
-        const category = data.name;
-        const catID = data.id
-        if (!categoryMap.has(category)) {
-            categoryMap.set(category, { color: data.color || '#71717a' });
-        }
-    });
-    return Array.from(categoryMap.entries()).map(([name, data]) => ({ name, ...data }));
+    return categories.map((data) => ({
+      id: data.id,
+      name: data.name,
+      color: data.color || '#71717a'
+    }));
   }, [categories]);
 
   if (isLoading) {
@@ -83,8 +79,8 @@ export function NavGroups({ onAddGroup, onGroupsLoad }: { onAddGroup: () => void
         <SidebarGroupContent>
           <SidebarMenu>
             {goalCategories.map((cat) => (
-              <SidebarMenuItem key={cat.name}>
-                <SidebarMenuButton asChild>
+              <SidebarMenuItem key={cat.id}>
+                <SidebarMenuButton asChild isActive={pathname === `/category/${cat.id}`}>
                   <Link href={`/category/${cat.id}`}><Tag className="size-4" style={{ color: cat.color }} /><span className="truncate">{cat.name}</span></Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
