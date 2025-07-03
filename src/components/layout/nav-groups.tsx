@@ -4,7 +4,7 @@
 import { useEffect, useState, useMemo } from "react";
 import Link from "next/link";
 import { Grip, Plus, Tag } from "lucide-react";
-import { Group, GoalWithProgress } from "@/types/types";
+import { Group, GoalWithProgress, Categories } from "@/types/types";
 import { Skeleton } from "../ui/skeleton";
 import { SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuAction, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar";
 import { usePathname } from "next/navigation";
@@ -12,7 +12,8 @@ import { useRouter } from "next/navigation";
 
 export function NavGroups({ onAddGroup, onGroupsLoad }: { onAddGroup: () => void; onGroupsLoad: (groups: Group[]) => void }) {
   const [groups, setGroups] = useState<Group[]>([]);
-  const [goals, setGoals] = useState<GoalWithProgress[]>([]);
+  const [categories, setCategories] = useState<Categories[]>([]);
+  const [, setGoals] = useState<GoalWithProgress[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const pathname = usePathname();
   const router = useRouter();
@@ -20,10 +21,13 @@ export function NavGroups({ onAddGroup, onGroupsLoad }: { onAddGroup: () => void
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [groupsRes, goalsRes] = await Promise.all([ fetch("/api/groups"), fetch("/api/goals") ]);
+        const [groupsRes, goalsRes, categoriesRes] = await Promise.all([ fetch("/api/groups"), fetch("/api/goals"), fetch("/api/categories") ]);
         const groupsData = await groupsRes.json();
         const goalsData = await goalsRes.json();
+        const categoriesData = await categoriesRes.json();
+
         setGroups(groupsData);
+        setCategories(categoriesData);
         onGroupsLoad(groupsData);
         setGoals(goalsData);
       } catch (error) {
@@ -37,14 +41,15 @@ export function NavGroups({ onAddGroup, onGroupsLoad }: { onAddGroup: () => void
 
   const goalCategories = useMemo(() => {
     const categoryMap = new Map<string, { color: string }>();
-    goals.forEach((goal) => {
-        const category = goal.name;
+    categories.forEach((data) => {
+        const category = data.name;
+        const catID = data.id
         if (!categoryMap.has(category)) {
-            categoryMap.set(category, { color: goal.color || '#71717a' });
+            categoryMap.set(category, { color: data.color || '#71717a' });
         }
     });
     return Array.from(categoryMap.entries()).map(([name, data]) => ({ name, ...data }));
-  }, [goals]);
+  }, [categories]);
 
   if (isLoading) {
     return (
@@ -80,7 +85,7 @@ export function NavGroups({ onAddGroup, onGroupsLoad }: { onAddGroup: () => void
             {goalCategories.map((cat) => (
               <SidebarMenuItem key={cat.name}>
                 <SidebarMenuButton asChild>
-                  <Link href={`/category/${cat.name}`}><Tag className="size-4" style={{ color: cat.color }} /><span className="truncate">{cat.name}</span></Link>
+                  <Link href={`/category/${cat.id}`}><Tag className="size-4" style={{ color: cat.color }} /><span className="truncate">{cat.name}</span></Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             ))}
