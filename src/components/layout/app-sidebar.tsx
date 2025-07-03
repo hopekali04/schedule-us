@@ -25,6 +25,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     { title: "Search", url: "#", icon: Search },
     { title: "Ask AI", url: "#", icon: Sparkles },
     { title: "Groups", url: "/groups", icon: Users },
+    { title: "Categories", url: "/categories", icon: Users },
   ];
 
   return (
