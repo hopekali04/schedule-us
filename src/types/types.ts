@@ -40,7 +40,7 @@ export interface Goal extends BaseDoc {
   startAt: Timestamp | Date | string;
   endAt: Timestamp | Date | string;
   groupId: string;
-  category?: string;
+  categoryId?: string;
   color?: string;
   isCompleted: boolean; // NEW
   isClosed: boolean;    // NEW

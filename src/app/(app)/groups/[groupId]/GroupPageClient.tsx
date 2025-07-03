@@ -3,7 +3,7 @@
 "use client";
 
 import { useState } from 'react';
-import { Group, GoalWithProgress } from '@/types/types';
+import { Group, GoalWithProgress, Categories } from '@/types/types';
 import GoalCard from '@/components/goals/goal-card';
 import GoalPreviewModal from '@/components/goals/goal-preview-modal';
 import GoalModal from '@/components/goals/goal-modal';
@@ -14,9 +14,10 @@ import { useRouter } from 'next/navigation';
 interface GroupPageClientProps {
   initialGroup: Group;
   initialGoals: GoalWithProgress[];
+  initialCategories: Categories[]; 
 }
 
-export default function GroupPageClient({ initialGroup, initialGoals }: GroupPageClientProps) {
+export default function GroupPageClient({ initialGroup, initialGoals, initialCategories }: GroupPageClientProps) {
     const [group, setGroup] = useState(initialGroup);
     const [goals, setGoals] = useState(initialGoals);
     const [previewingGoal, setPreviewingGoal] = useState<GoalWithProgress | null>(null);
@@ -50,6 +51,7 @@ export default function GroupPageClient({ initialGroup, initialGoals }: GroupPag
                 isOpen={isGoalModalOpen} 
                 onClose={onModalClose} 
                 goal={editingGoal} 
+                categories={initialCategories}
                 groups={[group]} // Pass only the current group to the modal
             />
             <GoalPreviewModal 

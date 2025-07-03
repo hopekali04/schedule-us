@@ -10,7 +10,7 @@ import { Sidebar, SidebarContent, SidebarHeader } from "@/components/ui/sidebar"
 import GoalModal from "@/components/goals/goal-modal";
 import GroupModal from "@/components/groups/group-modal";
 import { useState } from "react";
-import { Group } from "@/types/types";
+import { Categories, Group } from "@/types/types";
 import { Target } from "lucide-react";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
@@ -18,6 +18,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const [isGoalModalOpen, setGoalModalOpen] = useState(false);
   const [isGroupModalOpen, setGroupModalOpen] = useState(false);
   const [groups, setGroups] = useState<Group[]>([]); // To pass to GoalModal
+  const [categories,] = useState<Categories[]>([]); // To pass to GoalModal
 
   const navMain = [
     { title: "Dashboard", url: "/", icon: Home, isActive: pathname === "/" },
@@ -28,7 +29,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
   return (
     <>
-        <GoalModal isOpen={isGoalModalOpen} onClose={() => setGoalModalOpen(false)} groups={groups} />
+        <GoalModal isOpen={isGoalModalOpen} onClose={() => setGoalModalOpen(false)} groups={groups} categories={categories} />
         <GroupModal isOpen={isGroupModalOpen} onClose={() => setGroupModalOpen(false)} />
         <Sidebar className="border-r"
          collapsible="icon"

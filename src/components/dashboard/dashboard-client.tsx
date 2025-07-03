@@ -3,7 +3,7 @@
 
 import { useState } from "react";
 import { Plus, Target, Users, TrendingUp, CheckCircle } from "lucide-react";
-import { DashboardData, GoalWithProgress, Group } from "@/types/types";
+import { Categories, DashboardData, GoalWithProgress, Group } from "@/types/types";
 import { Button } from "@/components/ui/button";
 import StatCard from "./stat-card";
 import GoalCard from "@/components/goals/goal-card";
@@ -19,9 +19,10 @@ interface DashboardClientProps {
   initialDashboardData: DashboardData;
   initialGoals: GoalWithProgress[];
   initialGroups: Group[];
+  initialCategories: Categories[];
 }
 
-export function DashboardClient({ initialDashboardData, initialGoals, initialGroups }: DashboardClientProps) {
+export function DashboardClient({ initialDashboardData, initialGoals, initialGroups, initialCategories }: DashboardClientProps) {
   const [dashboardData] = useState(initialDashboardData);
   const [isGoalModalOpen, setIsGoalModalOpen] = useState(false);
   const [isGroupModalOpen, setIsGroupModalOpen] = useState(false);
@@ -41,7 +42,7 @@ export function DashboardClient({ initialDashboardData, initialGoals, initialGro
 
   return (
     <>
-      <GoalModal isOpen={isGoalModalOpen} onClose={onModalClose} goal={editingGoal} groups={initialGroups} />
+      <GoalModal isOpen={isGoalModalOpen} onClose={onModalClose} goal={editingGoal} groups={initialGroups} categories={initialCategories} />
       <GoalPreviewModal goal={previewingGoal} onClose={() => setPreviewingGoal(null)} onEdit={handleOpenEditGoalModal} />
       <GroupModal isOpen={isGroupModalOpen} onClose={onModalClose} />
 

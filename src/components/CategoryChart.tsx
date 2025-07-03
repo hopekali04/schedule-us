@@ -13,8 +13,8 @@ export default function CategoryChart({ goals, categoryColors }: CategoryChartPr
   const categoryData = Object.entries(
     goals.reduce(
       (acc, goal) => {
-        if (goal.category) {
-          acc[goal.category] = (acc[goal.category] || 0) + 1
+        if (goal.categoryId) {
+          acc[goal.categoryId] = (acc[goal.categoryId] || 0) + 1
         }
         return acc
       },

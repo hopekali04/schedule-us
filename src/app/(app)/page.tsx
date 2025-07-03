@@ -2,7 +2,7 @@
 import { Suspense } from "react";
 import { DashboardClient } from "@/components/dashboard/dashboard-client";
 import { DashboardSkeleton } from "@/components/dashboard/dashboard-skeleton";
-import { DashboardData, GoalWithProgress, Group } from "@/types/types";
+import { Categories, DashboardData, GoalWithProgress, Group } from "@/types/types";
 import { cookies } from "next/headers";
 
 async function fetchData(path: string) {
@@ -24,10 +24,11 @@ async function fetchData(path: string) {
 }
 
 async function DashboardContent() {
-  const [dashboardData, allGoals, allGroups] = await Promise.all([
+  const [dashboardData, allGoals, allGroups, allCategories] = await Promise.all([
     fetchData('/dashboard') as Promise<DashboardData | null>,
     fetchData('/goals') as Promise<GoalWithProgress[] | null>,
-    fetchData('/groups') as Promise<Group[] | null>
+    fetchData('/groups') as Promise<Group[] | null>,
+    fetchData('/categories') as Promise<Categories[] | null>
   ]);
 
   if (!dashboardData || !allGoals || !allGroups) {
@@ -45,6 +46,7 @@ async function DashboardContent() {
       initialDashboardData={dashboardData} 
       initialGoals={allGoals}
       initialGroups={allGroups}
+      initialCategories={allCategories || []}
     />
   );
 }
