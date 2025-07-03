@@ -5,7 +5,7 @@ import { Key, useState } from "react";
 import { useForm, Controller, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { GoalWithProgress, Group } from "@/types/types";
+import { Categories, GoalWithProgress, Group } from "@/types/types";
 import { createGoal, updateGoal } from "@/lib/api";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "../ui/dialog";
 import { Button } from "../ui/button";
@@ -22,6 +22,7 @@ const goalSchema = z.object({
   description: z.string().optional(),
   groupId: z.string({ required_error: "Please select a group." }),
   color: z.string().optional(),
+  categoryId: z.string(),
   startAt: z.string().refine((val) => !isNaN(Date.parse(val)), { message: "Invalid date" }),
   endAt: z.string().refine((val) => !isNaN(Date.parse(val)), { message: "Invalid date" }),
   steps: z.array(z.object({ description: z.string().min(1, "Step description cannot be empty.") })),
@@ -32,9 +33,10 @@ interface GoalModalProps {
   onClose: () => void;
   goal?: GoalWithProgress | null;
   groups: Group[];
+  categories: Categories[];
 }
 
-export default function GoalModal({ isOpen, onClose, goal, groups }: GoalModalProps) {
+export default function GoalModal({ isOpen, onClose, goal, groups, categories }: GoalModalProps) {
   const [isLoading, setIsLoading] = useState(false);
 //   const router = useRouter();
   const { register, handleSubmit, control, formState: { errors } } = useForm<z.infer<typeof goalSchema>>({
@@ -44,6 +46,7 @@ export default function GoalModal({ isOpen, onClose, goal, groups }: GoalModalPr
       description: goal?.description || "",
       groupId: goal?.groupId || "",
       color: goal?.color || "#2563eb",
+      categoryId: goal?.categoryId ,
       startAt: goal ? new Date(goal.startAt as Date).toISOString().split('T')[0] : "",
       endAt: goal ? new Date(goal.endAt as Date).toISOString().split('T')[0] : "",
       steps: goal?.steps?.length ? goal.steps.map(s => ({ description: s.description })) : [{ description: "" }],
@@ -92,6 +95,13 @@ export default function GoalModal({ isOpen, onClose, goal, groups }: GoalModalPr
               <Select onValueChange={field.onChange} defaultValue={field.value}><SelectTrigger><SelectValue placeholder="Select a group" /></SelectTrigger>
                 <SelectContent>{groups.map((g) => (<SelectItem key={g.id} value={g.id}>{g.name === "<self>" ? "Personal" : g.name}</SelectItem>))}</SelectContent>
               </Select>{errors.groupId && <p className="text-red-500 text-sm">{errors.groupId.message}</p>}
+            </div>
+          )} />
+          <Controller name="categoryId" control={control} render={({ field }) => (
+            <div className="space-y-1"><Label>Category</Label>
+              <Select onValueChange={field.onChange} defaultValue={field.value}><SelectTrigger><SelectValue placeholder="Select a Category" /></SelectTrigger>
+                <SelectContent>{categories.map((g) => (<SelectItem key={g.id} value={g.id}>{g.name }</SelectItem>))}</SelectContent>
+              </Select>{errors.categoryId && <p className="text-red-500 text-sm">{errors.categoryId.message}</p>}
             </div>
           )} />
           <div className="space-y-2">
