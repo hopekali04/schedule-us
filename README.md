@@ -37,7 +37,7 @@ Follow these instructions to set up the project locally.
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/your-username/schedule-us.git
+   git clone https://github.com/hopekali04/schedule-us.git
    cd schedule-us
    ```
 
