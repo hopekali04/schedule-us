@@ -89,21 +89,57 @@ export default function GoalModal({ isOpen, onClose, goal, groups, categories }:
              <div className="space-y-1"><Label htmlFor="startAt">Start Date</Label><Input type="date" id="startAt" {...register("startAt")} />{errors.startAt && <p className="text-red-500 text-sm">{errors.startAt.message}</p>}</div>
              <div className="space-y-1"><Label htmlFor="endAt">End Date</Label><Input type="date" id="endAt" {...register("endAt")} />{errors.endAt && <p className="text-red-500 text-sm">{errors.endAt.message}</p>}</div>
           </div>
-          <Controller name="color" control={control} render={({ field }) => (<div><Label>Color</Label><ColorPicker value={field.value!} onChange={field.onChange} /></div>)} />
-          <Controller name="groupId" control={control} render={({ field }) => (
-            <div className="space-y-1"><Label>Group</Label>
-              <Select onValueChange={field.onChange} defaultValue={field.value}><SelectTrigger><SelectValue placeholder="Select a group" /></SelectTrigger>
-                <SelectContent>{groups.map((g) => (<SelectItem key={g.id} value={g.id}>{g.name === "<self>" ? "Personal" : g.name}</SelectItem>))}</SelectContent>
-              </Select>{errors.groupId && <p className="text-red-500 text-sm">{errors.groupId.message}</p>}
-            </div>
-          )} />
-          <Controller name="categoryId" control={control} render={({ field }) => (
-            <div className="space-y-1"><Label>Category</Label>
-              <Select onValueChange={field.onChange} defaultValue={field.value}><SelectTrigger><SelectValue placeholder="Select a Category" /></SelectTrigger>
-                <SelectContent>{categories.map((g) => (<SelectItem key={g.id} value={g.id}>{g.name }</SelectItem>))}</SelectContent>
-              </Select>{errors.categoryId && <p className="text-red-500 text-sm">{errors.categoryId.message}</p>}
-            </div>
-          )} />
+          <Controller name="color" control={control} render={({ field }) => (<div><Label>Color</Label><ColorPicker value={field.value!} onChange={field.onChange} /></div>)} />          
+          <div className="grid grid-cols-2 gap-4">
+            <Controller
+              name="groupId"
+              control={control}
+              render={({ field }) => (
+                <div className="space-y-1">
+                  <Label>Group</Label>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a group" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {groups.map((g) => (
+                        <SelectItem key={g.id} value={g.id}>
+                          {g.name === "<self>" ? "Personal" : g.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {errors.groupId && (
+                    <p className="text-red-500 text-sm">{errors.groupId.message}</p>
+                  )}
+                </div>
+              )}
+            />
+            <Controller
+              name="categoryId"
+              control={control}
+              render={({ field }) => (
+                <div className="space-y-1">
+                  <Label>Category</Label>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a Category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {categories.map((g) => (
+                        <SelectItem key={g.id} value={g.id}>
+                          {g.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {errors.categoryId && (
+                    <p className="text-red-500 text-sm">{errors.categoryId.message}</p>
+                  )}
+                </div>
+              )}
+            />
+          </div>
           <div className="space-y-2">
             <Label>Steps to achieve this goal</Label>
             {fields.map((field: { id: Key | null | undefined; }, index: number) => (
