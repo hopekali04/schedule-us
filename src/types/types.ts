@@ -23,6 +23,12 @@ export interface Group extends BaseDoc {
   createdBy: string; // User UID
 }
 
+export interface Categories extends BaseDoc {
+  name: string;
+  description?: string;
+  color?: string; 
+}
+
 export interface GroupMember extends BaseDoc { // Now extends BaseDoc to have its own ID
   groupId: string;
   userId: string;
