@@ -56,9 +56,11 @@ export async function DELETE(request: NextRequest, { params }: { params: { categ
 
     try {
         const categoryRef = adminDb.collection('categories').doc(params.categoryId);
-        const categoryDoc = await categoryRef.get();
-        if (!categoryDoc.exists || categoryDoc.data()?.deletedAt) {
-            return NextResponse.json({ error: 'Category not found' }, { status: 404 });
+const categoryDoc = await categoryRef.get();
+        const categoryData = categoryDoc.data();
+
+        if (!categoryDoc.exists || categoryData?.deletedAt || categoryData?.userId !== userId) {
+            return NextResponse.json({ error: 'Category not found or permission denied' }, { status: 404 });
         }
 
         await categoryRef.update({ deletedAt: Timestamp.now() });
