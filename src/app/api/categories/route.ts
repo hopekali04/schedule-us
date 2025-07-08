@@ -9,7 +9,7 @@ export async function GET(request: NextRequest) {
     if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
     try {
-        const categoriesSnapshot = await adminDb.collection('categories').where('deletedAt', '==', null).get();
+const categoriesSnapshot = await adminDb.collection('categories').where('userId', '==', userId).where('deletedAt', '==', null).get();
         const categories = categoriesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         return NextResponse.json(categories, { status: 200 });
     } catch (error) {
