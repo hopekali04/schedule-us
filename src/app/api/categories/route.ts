@@ -27,7 +27,8 @@ export async function POST(request: NextRequest) {
         const { name, description, color } = await request.json();
         if (!name) return NextResponse.json({ error: 'Category name is required' }, { status: 400 });
 
-        const newCategory = {
+const newCategory = {
+            userId,
             name,
             description: description || '',
             color: color || '',
