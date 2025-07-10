@@ -4,32 +4,41 @@ import { getUserIdFromRequest } from "@/lib/auth-helper";
 import { Timestamp } from "firebase-admin/firestore";
 
 // GET a single category by ID
-// export async function GET(request: NextRequest, { params }: { params: { categoryId: string } }) {
-//     const userId = await getUserIdFromRequest(request);
-//     if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+export async function GET(
+  request: NextRequest, 
+  { params }: { params: Promise<{ categoryId: string }> }
+) {
+  const userId = await getUserIdFromRequest(request);
+  if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-//     try {
-//         const categoryDoc = await adminDb.collection('categories').doc(params.categoryId).get();
-//         if (!categoryDoc.exists || categoryDoc.data()?.deletedAt) {
-//             return NextResponse.json({ error: 'Category not found' }, { status: 404 });
-//         }
-//         return NextResponse.json({ id: categoryDoc.id, ...categoryDoc.data() }, { status: 200 });
-//     } catch (error) {
-//         console.error(`Error fetching category ${params.categoryId}:`, error);
-//         return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
-//     }
-// }
+  try {
+    // Await the params Promise to get the actual parameters
+    const { categoryId } = await params;
+    
+    const categoryDoc = await adminDb.collection('categories').doc(categoryId).get();
+    if (!categoryDoc.exists || categoryDoc.data()?.deletedAt) {
+      return NextResponse.json({ error: 'Category not found' }, { status: 404 });
+    }
+    return NextResponse.json({ id: categoryDoc.id, ...categoryDoc.data() }, { status: 200 });
+  } catch (error) {
+    console.error(`Error fetching category:`, error);
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+  }
+}
 
 // PUT (update) a category by ID
-export async function PATCH(request: NextRequest, { params }: { params: { categoryId: string } }) {
+export async function PATCH(request: NextRequest, 
+    { params }: { params: Promise<{ categoryId: string }> }
+) {
     const userId = await getUserIdFromRequest(request);
     if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
     try {
+        const { categoryId } = await params;
         const { name, description, color } = await request.json();
-        const categoryRef = adminDb.collection('categories').doc(params.categoryId);
+        const categoryRef = adminDb.collection('categories').doc(categoryId);
 
-const categoryDoc = await categoryRef.get();
+        const categoryDoc = await categoryRef.get();
         const categoryData = categoryDoc.data();
 
         if (!categoryDoc.exists || categoryData?.deletedAt || categoryData?.userId !== userId) {
@@ -44,19 +53,22 @@ const categoryDoc = await categoryRef.get();
         await categoryRef.update(updatedData);
         return NextResponse.json({ message: 'Category updated successfully' }, { status: 200 });
     } catch (error) {
-        console.error(`Error updating category ${params.categoryId}:`, error);
+        console.error(`Error updating category ${params}:`, error);
         return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
     }
 }
 
 // DELETE (soft delete) a category by ID
-export async function DELETE(request: NextRequest, { params }: { params: { categoryId: string } }) {
+export async function DELETE(request: NextRequest, 
+    { params }: { params: Promise<{ categoryId: string }> }
+) {
     const userId = await getUserIdFromRequest(request);
     if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
     try {
-        const categoryRef = adminDb.collection('categories').doc(params.categoryId);
-const categoryDoc = await categoryRef.get();
+        const { categoryId } = await params;
+        const categoryRef = adminDb.collection('categories').doc(categoryId);
+        const categoryDoc = await categoryRef.get();
         const categoryData = categoryDoc.data();
 
         if (!categoryDoc.exists || categoryData?.deletedAt || categoryData?.userId !== userId) {
@@ -66,7 +78,7 @@ const categoryDoc = await categoryRef.get();
         await categoryRef.update({ deletedAt: Timestamp.now() });
         return NextResponse.json({ message: 'Category soft deleted successfully' }, { status: 200 });
     } catch (error) {
-        console.error(`Error deleting category ${params.categoryId}:`, error);
+        console.error(`Error deleting category `, error);
         return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
     }
 }
