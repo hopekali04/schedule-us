@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -30,6 +30,8 @@ export function CategoryModal({ isOpen, onClose, onSuccess, category }: Category
     const { register, handleSubmit, reset, formState: { errors } } = useForm<CategoryFormData>({
         resolver: zodResolver(categorySchema),
     });
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     useEffect(() => {
         if (category) {
@@ -40,6 +42,8 @@ export function CategoryModal({ isOpen, onClose, onSuccess, category }: Category
     }, [category, reset]);
 
     const onSubmit = async (data: CategoryFormData) => {
+        setIsSubmitting(true);
+        setErrorMessage(null);
         try {
             if (category) {
                 await updateCategory(category.id, data);
@@ -48,7 +52,15 @@ export function CategoryModal({ isOpen, onClose, onSuccess, category }: Category
             }
             onSuccess();
         } catch (error) {
-            console.error("Error saving category:", error);
+            if (error instanceof Error) {
+                setErrorMessage(error.message);
+            } else if (typeof error === 'string') {
+                setErrorMessage(error);
+            } else {
+                setErrorMessage('An error occurred while saving the category.');
+            }
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -58,23 +70,32 @@ export function CategoryModal({ isOpen, onClose, onSuccess, category }: Category
                 <DialogHeader>
                     <DialogTitle>{category ? "Edit Category" : "Add Category"}</DialogTitle>
                 </DialogHeader>
+                {errorMessage && (
+                    <div className="text-red-500 text-sm mb-2">{errorMessage}</div>
+                )}
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                     <div>
                         <Label htmlFor="name">Name</Label>
-                        <Input id="name" {...register("name")} />
+                        <Input id="name" {...register("name")}/>
                         {errors.name && <p className="text-red-500 text-sm">{errors.name.message}</p>}
                     </div>
                     <div>
                         <Label htmlFor="description">Description</Label>
-                        <Input id="description" {...register("description")} />
+                        <Input id="description" {...register("description")}/>
                     </div>
                     <div>
                         <Label htmlFor="color">Color</Label>
-                        <Input id="color" type="color" {...register("color")} />
+                        <Input id="color" type="color" {...register("color")}/>
                     </div>
                     <div className="flex justify-end space-x-2">
-                        <Button type="button" variant="outline" onClick={onClose}>Cancel</Button>
-                        <Button type="submit">{category ? "Save Changes" : "Create"}</Button>
+                        <Button type="button" variant="outline" onClick={onClose} disabled={isSubmitting}>Cancel</Button>
+                        <Button type="submit" disabled={isSubmitting}>
+                            {isSubmitting
+                                ? "Saving..."
+                                : category
+                                    ? "Save Changes"
+                                    : "Create"}
+                        </Button>
                     </div>
                 </form>
             </DialogContent>
