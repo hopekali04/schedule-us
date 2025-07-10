@@ -1,5 +1,5 @@
 // lib/api.ts
-import { Goal, Group } from "@/types/types";
+import { Categories, Goal, Group } from "@/types/types";
 
 // A helper to make authenticated requests
 async function fetchAPI(path: string, options: RequestInit = {}) {
@@ -49,6 +49,13 @@ export const updateGroup = (id: string, data: Partial<Group>) => fetchAPI(`/grou
 export const deleteGroup = (id: string) => fetchAPI(`/groups/${id}`, { method: 'DELETE' });
 export const addGroupMember = (groupId: string, email: string) => fetchAPI(`/groups/${groupId}/members`, { method: 'POST', body: JSON.stringify({ email }) });
 export const removeGroupMember = (groupId: string, memberUserId: string) => fetchAPI(`/groups/${groupId}/members/${memberUserId}`, { method: 'DELETE' });
+
+// --- Category APIs ---
+export const createCategory = (data: Partial<Categories>) => fetchAPI('/categories', { method: 'POST', body: JSON.stringify(data) });
+export const updateCategory = (id: string, data: Partial<Categories>) => fetchAPI(`/categories/${id}`, { method: 'PATCH', body: JSON.stringify(data) });
+export const deleteCategory = (id: string) => fetchAPI(`/categories/${id}`, { method: 'DELETE' });
+export const getAllCategories = () => fetchAPI('/categories', { method: 'GET' });
+
 
 // --- User APIs ---
 // NOTE: We don't have a user API yet, but this is how you would add it.
