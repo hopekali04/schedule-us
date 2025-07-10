@@ -6,13 +6,13 @@ import { Timestamp } from "firebase-admin/firestore";
 // GET a single category by ID
 export async function GET(
   request: NextRequest, 
-  { params }: { params: { categoryId: string } }
+  { params }: { params: Promise<{ categoryId: string }> }
 ) {
   const userId = await getUserIdFromRequest(request);
   if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   try {
-    const { categoryId } = params;
+    const { categoryId } = await params;
     const categoryDoc = await adminDb.collection('categories').doc(categoryId).get();
     const categoryData = categoryDoc.data();
 
@@ -32,13 +32,13 @@ export async function GET(
 // PATCH (update) a category by ID
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { categoryId: string } }
+  { params }: { params: Promise<{ categoryId: string }> }
 ) {
   const userId = await getUserIdFromRequest(request);
   if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   try {
-    const { categoryId } = params;
+    const { categoryId } = await params;
     const { name, description, color } = await request.json();
     const categoryRef = adminDb.collection('categories').doc(categoryId);
     const categoryDoc = await categoryRef.get();
@@ -67,13 +67,13 @@ export async function PATCH(
 // DELETE (soft delete) a category by ID
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { categoryId: string } }
+    { params }: { params: Promise<{ categoryId: string }> }
 ) {
   const userId = await getUserIdFromRequest(request);
   if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   try {
-    const { categoryId } = params;
+    const { categoryId } = await params;
     const categoryRef = adminDb.collection('categories').doc(categoryId);
     const categoryDoc = await categoryRef.get();
     const categoryData = categoryDoc.data();
