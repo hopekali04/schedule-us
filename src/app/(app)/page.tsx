@@ -2,7 +2,7 @@
 import { Suspense } from "react";
 import { DashboardClient } from "@/components/dashboard/dashboard-client";
 import { DashboardSkeleton } from "@/components/dashboard/dashboard-skeleton";
-import { Categories, DashboardData, GoalWithProgress, Group } from "@/types/types";
+import { Categories, DashboardData, GoalWithProgress, Group, User } from "@/types/types";
 import { cookies } from "next/headers";
 
 async function fetchData(path: string) {
@@ -24,11 +24,12 @@ async function fetchData(path: string) {
 }
 
 async function DashboardContent() {
-  const [dashboardData, allGoals, allGroups, allCategories] = await Promise.all([
+  const [dashboardData, allGoals, allGroups, allCategories, user] = await Promise.all([
     fetchData('/dashboard') as Promise<DashboardData | null>,
     fetchData('/goals') as Promise<GoalWithProgress[] | null>,
     fetchData('/groups') as Promise<Group[] | null>,
-    fetchData('/categories') as Promise<Categories[] | null>
+    fetchData('/categories') as Promise<Categories[] | null>,
+    fetchData('/auth/session') as Promise<User | null>
   ]);
 
   if (!dashboardData || !allGoals || !allGroups) {
@@ -41,12 +42,15 @@ async function DashboardContent() {
     );
   }
 
+  // console.log('user', user);
+
   return (
     <DashboardClient 
       initialDashboardData={dashboardData} 
       initialGoals={allGoals}
       initialGroups={allGroups}
       initialCategories={allCategories || []}
+      currentUser={user || null}  
     />
   );
 }
