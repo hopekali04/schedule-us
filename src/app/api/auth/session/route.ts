@@ -83,6 +83,40 @@ export async function POST(request: NextRequest) {
   }
 }
 
+// GET handler to retrieve current session information
+export async function GET(request: NextRequest) {
+  try {
+    const sessionCookie = request.cookies.get('session')?.value;
+    
+    if (!sessionCookie) {
+      return NextResponse.json({ error: 'No session found' }, { status: 401 });
+    }
+
+    // Verify the session cookie and get user info
+    const decodedToken = await adminAuth.verifySessionCookie(sessionCookie, true);
+    
+    // Get user data from Firestore
+    const userDoc = await adminDb.collection('users').doc(decodedToken.uid).get();
+    
+    if (!userDoc.exists) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+
+    const userData = userDoc.data();
+    
+    return NextResponse.json({
+      uid: decodedToken.uid,
+      email: decodedToken.email,
+      emailVerified: decodedToken.email_verified,
+      ...userData
+    }, { status: 200 });
+    
+  } catch (error) {
+    console.error('Session verification error:', error);
+    return NextResponse.json({ error: 'Invalid session' }, { status: 401 });
+  }
+}
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function DELETE(request: NextRequest) {
   try {
