@@ -3,7 +3,7 @@
 
 import { useState } from "react";
 import { Plus, Target, Users, TrendingUp, CheckCircle } from "lucide-react";
-import { Categories, DashboardData, GoalWithProgress, Group } from "@/types/types";
+import { Categories, DashboardData, GoalWithProgress, Group, User } from "@/types/types";
 import { Button } from "@/components/ui/button";
 import StatCard from "./stat-card";
 import GoalCard from "@/components/goals/goal-card";
@@ -20,9 +20,10 @@ interface DashboardClientProps {
   initialGoals: GoalWithProgress[];
   initialGroups: Group[];
   initialCategories: Categories[];
+  currentUser: User | null;
 }
 
-export function DashboardClient({ initialDashboardData, initialGoals, initialGroups, initialCategories }: DashboardClientProps) {
+export function DashboardClient({ initialDashboardData, initialGoals, initialGroups, initialCategories, currentUser }: DashboardClientProps) {
   const [dashboardData] = useState(initialDashboardData);
   const [isGoalModalOpen, setIsGoalModalOpen] = useState(false);
   const [isGroupModalOpen, setIsGroupModalOpen] = useState(false);
@@ -37,6 +38,7 @@ export function DashboardClient({ initialDashboardData, initialGoals, initialGro
     setIsGroupModalOpen(false);
     router.refresh(); 
   };
+  const UserMail = currentUser?.email || "User";
 
   const activeGoals = initialGoals.filter(g => g.status !== 'Completed' && g.status !== 'Closed');
 
@@ -47,7 +49,7 @@ export function DashboardClient({ initialDashboardData, initialGoals, initialGro
       <GroupModal isOpen={isGroupModalOpen} onClose={onModalClose} />
 
       <div className="p-4 sm:p-6 lg:p-8 space-y-8">
-        <WelcomeHeader userName={"Alex"} />
+        <WelcomeHeader userName={UserMail} />
         
         {/* <div>
           <h2 className="text-3xl font-bold tracking-tight text-gray-900">Dashboard</h2>
