@@ -7,8 +7,10 @@ import { Group, GoalWithProgress, Categories } from '@/types/types';
 import GoalCard from '@/components/goals/goal-card';
 import GoalPreviewModal from '@/components/goals/goal-preview-modal';
 import GoalModal from '@/components/goals/goal-modal';
+import ChatRoom from '@/components/chat/chat-room';
 import { Button } from '@/components/ui/button';
-import {  Settings, Plus, Mail } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {  Settings, Plus, Mail, MessageCircle, Target } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 interface GroupPageClientProps {
@@ -79,41 +81,64 @@ export default function GroupPageClient({ initialGroup, initialGoals, initialCat
                     </div>
                 </div>
 
-                {/* Active Goals Section */}
-                <div>
-                    <div className="flex items-center justify-between pb-4">
-                        <h3 className="text-2xl font-semibold text-gray-900">Active Goals</h3>
-                        <Button onClick={handleOpenNewGoalModal} className="bg-blue-600 hover:bg-blue-700">
-                            <Plus className="mr-2 h-4 w-4" /> New Goal for this Group
-                        </Button>
-                    </div>
-                    {activeGoals.length > 0 ? (
-                        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
-                            {activeGoals.map((goal) => (
-                                <GoalCard key={goal.id} goal={goal} onClick={() => setPreviewingGoal(goal)} />
-                            ))}
+                {/* Main Content with Tabs */}
+                <Tabs defaultValue="goals" className="w-full">
+                    <TabsList className="grid w-full grid-cols-2">
+                        <TabsTrigger value="goals" className="flex items-center gap-2">
+                            <Target className="h-4 w-4" />
+                            Goals
+                        </TabsTrigger>
+                        <TabsTrigger value="chat" className="flex items-center gap-2">
+                            <MessageCircle className="h-4 w-4" />
+                            Chat
+                        </TabsTrigger>
+                    </TabsList>
+                    
+                    <TabsContent value="goals" className="space-y-8">
+                        {/* Active Goals Section */}
+                        <div>
+                            <div className="flex items-center justify-between pb-4">
+                                <h3 className="text-2xl font-semibold text-gray-900">Active Goals</h3>
+                                <Button onClick={handleOpenNewGoalModal} className="bg-blue-600 hover:bg-blue-700">
+                                    <Plus className="mr-2 h-4 w-4" /> New Goal for this Group
+                                </Button>
+                            </div>
+                            {activeGoals.length > 0 ? (
+                                <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+                                    {activeGoals.map((goal) => (
+                                        <GoalCard key={goal.id} goal={goal} onClick={() => setPreviewingGoal(goal)} />
+                                    ))}
+                                </div>
+                            ) : (
+                                <div className="text-center py-10 border-2 border-dashed rounded-lg">
+                                    <h3 className="text-lg font-medium text-gray-900">No active goals here!</h3>
+                                    <p className="mt-1 text-sm text-gray-500">Create a new goal to get this group started.</p>
+                                </div>
+                            )}
                         </div>
-                    ) : (
-                        <div className="text-center py-10 border-2 border-dashed rounded-lg">
-                            <h3 className="text-lg font-medium text-gray-900">No active goals here!</h3>
-                            <p className="mt-1 text-sm text-gray-500">Create a new goal to get this group started.</p>
-                        </div>
-                    )}
-                </div>
 
-                {/* Completed Goals Section */}
-                {completedGoals.length > 0 && (
-                     <div>
-                        <div className="pb-4">
-                            <h3 className="text-2xl font-semibold text-gray-900">Completed Goals</h3>
-                        </div>
-                        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
-                            {completedGoals.map((goal) => (
-                                <GoalCard key={goal.id} goal={goal} onClick={() => setPreviewingGoal(goal)} />
-                            ))}
-                        </div>
-                    </div>
-                )}
+                        {/* Completed Goals Section */}
+                        {completedGoals.length > 0 && (
+                             <div>
+                                <div className="pb-4">
+                                    <h3 className="text-2xl font-semibold text-gray-900">Completed Goals</h3>
+                                </div>
+                                <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+                                    {completedGoals.map((goal) => (
+                                        <GoalCard key={goal.id} goal={goal} onClick={() => setPreviewingGoal(goal)} />
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                    </TabsContent>
+                    
+                    <TabsContent value="chat">
+                        <ChatRoom 
+                            groupId={group.id} 
+                            groupName={group.name === '<self>' ? 'Personal Goals' : group.name}
+                        />
+                    </TabsContent>
+                </Tabs>
             </div>
         </>
     );
