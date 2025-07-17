@@ -66,7 +66,6 @@ export async function POST(request: NextRequest) {
       });
       console.log(`Successfully created user profile and self-group for UID: ${decodedToken.uid}`);
     }
-    // --- END OF NEW LOGIC ---
 
     (await
       cookies()).set('session', sessionCookie, {
