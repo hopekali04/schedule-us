@@ -1,8 +1,8 @@
 {
   "type": "acc",
-  "project_id": "1222222",
-  "private_key_id": "12333333",
-  "private_key": "12333",
+  "project_id": "id",
+  "private_key_id": "key123",
+  "private_key": "-----BEGIN PRIVATE KEY---key/8999/here-----END PRIVATE KEY-----\n",
   "client_email": "firebase@me.com",
   "client_id": "1212",
   "auth_uri": "https://accounts.google.com/o/oauth2/auth",

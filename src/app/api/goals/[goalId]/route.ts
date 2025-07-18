@@ -14,11 +14,12 @@ async function canUserAccessGoal(userId: string, goalId: string): Promise<boolea
 }
 
 // UPDATE a goal's properties (including completion status)
-export async function PATCH(request: NextRequest, { params }: { params: { goalId: string } }) {
+export async function PATCH(request: NextRequest, { params }: { params: Promise<{ goalId: string }> }) {
     const userId = await getUserIdFromRequest(request);
     if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-    if (!await canUserAccessGoal(userId, params.goalId)) {
+    const { goalId } = await params;
+    if (!await canUserAccessGoal(userId, goalId)) {
         return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
@@ -40,7 +41,7 @@ export async function PATCH(request: NextRequest, { params }: { params: { goalId
             return NextResponse.json({ error: 'No update fields provided' }, { status: 400 });
         }
 
-        await adminDb.collection('goals').doc(params.goalId).update(updateData);
+        await adminDb.collection('goals').doc(goalId).update(updateData);
         return NextResponse.json({ message: 'Goal updated successfully' }, { status: 200 });
     } catch (error) {
         console.error('Error updating goal:', error);
@@ -49,16 +50,17 @@ export async function PATCH(request: NextRequest, { params }: { params: { goalId
 }
 
 // DELETE (soft) a goal
-export async function DELETE(request: NextRequest, { params }: { params: { goalId: string } }) {
+export async function DELETE(request: NextRequest, { params }: { params: Promise<{ goalId: string }> }) {
     const userId = await getUserIdFromRequest(request);
     if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     
-    if (!await canUserAccessGoal(userId, params.goalId)) {
+    const { goalId } = await params;
+    if (!await canUserAccessGoal(userId, goalId)) {
         return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
     try {
-        await adminDb.collection('goals').doc(params.goalId).update({
+        await adminDb.collection('goals').doc(goalId).update({
             deletedAt: FieldValue.serverTimestamp()
         });
         return NextResponse.json({ message: 'Goal deleted successfully' }, { status: 200 });

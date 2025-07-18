@@ -53,6 +53,13 @@ export interface GoalStep extends BaseDoc {
   isCompleted: boolean;
 }
 
+export interface ChatMessage extends BaseDoc {
+  groupId: string;
+  userId: string;
+  userDisplayName: string;
+  message: string;
+}
+
 // API Response Types (User-Friendly JSON)
 export interface GoalProgressData {
   progressPercentage: number;

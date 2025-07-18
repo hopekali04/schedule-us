@@ -1,10 +1,12 @@
 "use client";
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 import { CategoryModal } from "@/components/categories/category-modal";
 import { Categories } from "@/types/types";
 import { getAllCategories, deleteCategory } from "@/lib/api";
+import { Trash2 } from 'lucide-react';
 
 function CategoriesSkeleton() {
     return (
@@ -32,6 +34,7 @@ export function CategoriesClient() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedCategory, setSelectedCategory] = useState<Categories | null>(null);
     const [loading, setLoading] = useState(true);
+    const router = useRouter();
 
     useEffect(() => {
         fetchCategories();
@@ -40,13 +43,18 @@ export function CategoriesClient() {
     const fetchCategories = async () => {
         setLoading(true);
         try {
-            const response = await getAllCategories();
-            setCategories(response.data);
+            const categories = await getAllCategories();
+            setCategories(categories || []);
         } catch (error) {
             console.error("Error fetching categories:", error);
+            setCategories([]);
         } finally {
             setLoading(false);
         }
+    };
+
+    const handleCategoryClick = (category: Categories) => {
+        router.push(`/categories/${category.id}`);
     };
 
     const handleEdit = (category: Categories) => {
@@ -71,7 +79,15 @@ export function CategoriesClient() {
 
     return (
         <div>
-            <div className="flex justify-end mb-4">
+            <div className="flex justify-between items-center mb-4">
+                <Button 
+                    variant="outline"
+                    onClick={() => router.push('/categories/deleted')}
+                    className="flex items-center gap-2"
+                >
+                    <Trash2 className="h-4 w-4" />
+                    View Deleted Categories
+                </Button>
                 <Button onClick={() => setIsModalOpen(true)}>Add Category</Button>
             </div>
             <CategoryModal
@@ -85,10 +101,29 @@ export function CategoriesClient() {
             />
             {loading ? (
                 <CategoriesSkeleton />
+            ) : categories.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-16">
+                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-12 text-center max-w-md">
+                        <div className="text-gray-400 mb-4">
+                            <svg className="mx-auto h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a2 2 0 012-2z" />
+                            </svg>
+                        </div>
+                        <h3 className="text-lg font-medium text-gray-900 mb-2">No categories created yet</h3>
+                        <p className="text-gray-500 mb-6">Get started by creating your first category to organize your goals and tasks.</p>
+                        <Button onClick={() => setIsModalOpen(true)} className="w-full">
+                            Create Your First Category
+                        </Button>
+                    </div>
+                </div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {categories.map((category) => (
-                        <div key={category.id} className="p-4 border rounded-lg shadow-sm">
+                        <div 
+                            key={category.id} 
+                            className="p-4 border rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+                            onClick={() => handleCategoryClick(category)}
+                        >
                             <h2 className="text-xl font-semibold">{category.name}</h2>
                             <p>{category.description}</p>
                             <div className="flex items-center mt-2">
@@ -96,8 +131,26 @@ export function CategoriesClient() {
                                 <span className="ml-2 text-sm text-gray-500">{category.color}</span>
                             </div>
                             <div className="flex justify-end space-x-2 mt-4">
-                                <Button variant="outline" size="sm" onClick={() => handleEdit(category)}>Edit</Button>
-                                <Button variant="destructive" size="sm" onClick={() => handleDelete(category.id)}>Delete</Button>
+                                <Button 
+                                    variant="outline" 
+                                    size="sm" 
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleEdit(category);
+                                    }}
+                                >
+                                    Edit
+                                </Button>
+                                <Button 
+                                    variant="destructive" 
+                                    size="sm" 
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleDelete(category.id);
+                                    }}
+                                >
+                                    Delete
+                                </Button>
                             </div>
                         </div>
                     ))}
