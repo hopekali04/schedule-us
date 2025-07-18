@@ -1,13 +1,12 @@
-// app/(app)/categories/[categoryId]/goals/page.tsx
-import { CategoryGoalsClient } from './CategoryGoalsClient';
+import { CategoryDetailClient } from './CategoryDetailClient';
 import { adminDb } from '@/lib/firebase-admin';
 import { Categories } from '@/types/types';
 
-interface CategoryGoalsPageProps {
+interface CategoryDetailPageProps {
   params: Promise<{ categoryId: string }>;
 }
 
-// Serialize Category data for client component
+// Serializable Category data for client component
 interface SerializableCategory {
   id: string;
   name: string;
@@ -44,10 +43,40 @@ async function getCategoryData(categoryId: string): Promise<SerializableCategory
   }
 }
 
-export default async function CategoryGoalsPage({ params }: CategoryGoalsPageProps) {
+async function getCategoryGoalsCount(categoryId: string): Promise<{ total: number; active: number; completed: number }> {
+  try {
+    const goalsSnapshot = await adminDb.collection('goals')
+      .where('categoryId', '==', categoryId)
+      .where('deletedAt', '==', null)
+      .get();
+    
+    const total = goalsSnapshot.size;
+    let active = 0;
+    let completed = 0;
+    
+    goalsSnapshot.docs.forEach(doc => {
+      const data = doc.data();
+      if (data.isCompleted || data.isClosed) {
+        completed++;
+      } else {
+        active++;
+      }
+    });
+    
+    return { total, active, completed };
+  } catch (error) {
+    console.error('Error fetching goals count:', error);
+    return { total: 0, active: 0, completed: 0 };
+  }
+}
+
+export default async function CategoryDetailPage({ params }: CategoryDetailPageProps) {
   const { categoryId } = await params;
   
-  const category = await getCategoryData(categoryId);
+  const [category, goalsCount] = await Promise.all([
+    getCategoryData(categoryId),
+    getCategoryGoalsCount(categoryId)
+  ]);
   
   if (!category) {
     return (
@@ -58,5 +87,5 @@ export default async function CategoryGoalsPage({ params }: CategoryGoalsPagePro
     );
   }
 
-  return <CategoryGoalsClient category={category} />;
+  return <CategoryDetailClient category={category} goalsCount={goalsCount} />;
 }

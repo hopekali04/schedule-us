@@ -1,13 +1,12 @@
-// app/(app)/categories/[categoryId]/goals/page.tsx
-import { CategoryGoalsClient } from './CategoryGoalsClient';
+import { EditCategoryClient } from './EditCategoryClient';
 import { adminDb } from '@/lib/firebase-admin';
 import { Categories } from '@/types/types';
 
-interface CategoryGoalsPageProps {
+interface EditCategoryPageProps {
   params: Promise<{ categoryId: string }>;
 }
 
-// Serialize Category data for client component
+// Serializable Category data for client component
 interface SerializableCategory {
   id: string;
   name: string;
@@ -44,7 +43,7 @@ async function getCategoryData(categoryId: string): Promise<SerializableCategory
   }
 }
 
-export default async function CategoryGoalsPage({ params }: CategoryGoalsPageProps) {
+export default async function EditCategoryPage({ params }: EditCategoryPageProps) {
   const { categoryId } = await params;
   
   const category = await getCategoryData(categoryId);
@@ -58,5 +57,5 @@ export default async function CategoryGoalsPage({ params }: CategoryGoalsPagePro
     );
   }
 
-  return <CategoryGoalsClient category={category} />;
+  return <EditCategoryClient category={category} />;
 }

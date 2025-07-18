@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { CategoryModal } from "@/components/categories/category-modal";
 import { Categories } from "@/types/types";
 import { getAllCategories, deleteCategory } from "@/lib/api";
+import { Trash2 } from 'lucide-react';
 
 function CategoriesSkeleton() {
     return (
@@ -53,7 +54,7 @@ export function CategoriesClient() {
     };
 
     const handleCategoryClick = (category: Categories) => {
-        router.push(`/categories/${category.id}/goals`);
+        router.push(`/categories/${category.id}`);
     };
 
     const handleEdit = (category: Categories) => {
@@ -78,7 +79,15 @@ export function CategoriesClient() {
 
     return (
         <div>
-            <div className="flex justify-end mb-4">
+            <div className="flex justify-between items-center mb-4">
+                <Button 
+                    variant="outline"
+                    onClick={() => router.push('/categories/deleted')}
+                    className="flex items-center gap-2"
+                >
+                    <Trash2 className="h-4 w-4" />
+                    View Deleted Categories
+                </Button>
                 <Button onClick={() => setIsModalOpen(true)}>Add Category</Button>
             </div>
             <CategoryModal

@@ -2,15 +2,26 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { Categories, GoalWithProgress } from '@/types/types';
+import { GoalWithProgress } from '@/types/types';
 import GoalCard from '@/components/goals/goal-card';
 import GoalPreviewModal from '@/components/goals/goal-preview-modal';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Target } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
+// Serializable category interface for client component
+interface SerializableCategory {
+  id: string;
+  name: string;
+  description?: string;
+  color?: string;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt?: string | null;
+}
+
 interface CategoryGoalsClientProps {
-  category: Categories;
+  category: SerializableCategory;
 }
 
 function GoalsSkeleton() {
