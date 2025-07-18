@@ -40,10 +40,11 @@ export function CategoriesClient() {
     const fetchCategories = async () => {
         setLoading(true);
         try {
-            const response = await getAllCategories();
-            setCategories(response.data);
+            const categories = await getAllCategories();
+            setCategories(categories || []);
         } catch (error) {
             console.error("Error fetching categories:", error);
+            setCategories([]);
         } finally {
             setLoading(false);
         }
