@@ -5,7 +5,7 @@ import { getUserIdFromRequest } from '@/lib/auth-helper';
 import { FieldValue } from 'firebase-admin/firestore';
 
 // Generate an invite token for a group
-export async function POST(request: NextRequest, { params }: { params: { groupId: string } }) {
+export async function POST(request: NextRequest, { params }: { params: Promise<{ groupId: string }> }) {
   const userId = await getUserIdFromRequest(request);
   if (!userId) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -17,7 +17,7 @@ export async function POST(request: NextRequest, { params }: { params: { groupId
       return NextResponse.json({ error: 'Email is required' }, { status: 400 });
     }
 
-    const groupId = params.groupId;
+    const { groupId } = await params;
 
     // Check if user is a member of the group
     const memberQuery = await adminDb.collection('group_members')

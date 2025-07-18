@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { toast } from '@/hooks/use-toast';
+import { useToast } from '@/components/ui/use-toast';
 import { Users, Mail, Calendar } from 'lucide-react';
 
 interface InviteData {
@@ -27,6 +27,7 @@ export function InvitePageClient({ inviteData }: InvitePageClientProps) {
   const [isProcessing, setIsProcessing] = useState(false);
   const [showDialog, setShowDialog] = useState(true);
   const router = useRouter();
+  const { toast } = useToast();
 
   const handleAction = async (action: 'accept' | 'decline') => {
     setIsProcessing(true);

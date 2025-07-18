@@ -4,7 +4,7 @@ import { adminDb } from '@/lib/firebase-admin';
 import { Categories } from '@/types/types';
 
 interface CategoryGoalsPageProps {
-  params: { categoryId: string };
+  params: Promise<{ categoryId: string }>;
 }
 
 async function getCategoryData(categoryId: string): Promise<Categories | null> {
@@ -23,7 +23,7 @@ async function getCategoryData(categoryId: string): Promise<Categories | null> {
 }
 
 export default async function CategoryGoalsPage({ params }: CategoryGoalsPageProps) {
-  const { categoryId } = params;
+  const { categoryId } = await params;
   
   const category = await getCategoryData(categoryId);
   

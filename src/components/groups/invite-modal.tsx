@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { toast } from '@/hooks/use-toast';
+import { useToast } from '@/components/ui/use-toast';
 import { Mail, Copy, CheckCircle } from 'lucide-react';
 
 interface InviteModalProps {
@@ -21,6 +21,7 @@ export function InviteModal({ isOpen, onClose, groupId, groupName }: InviteModal
   const [isGenerating, setIsGenerating] = useState(false);
   const [inviteLink, setInviteLink] = useState('');
   const [isCopied, setIsCopied] = useState(false);
+  const { toast } = useToast();
 
   const handleGenerateInvite = async () => {
     if (!email || !email.includes('@')) {

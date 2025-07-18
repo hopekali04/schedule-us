@@ -3,11 +3,11 @@ import { redirect } from 'next/navigation';
 import { InvitePageClient } from './InvitePageClient';
 
 interface InvitePageProps {
-  params: { token: string };
+  params: Promise<{ token: string }>;
 }
 
 export default async function InvitePage({ params }: InvitePageProps) {
-  const { token } = params;
+  const { token } = await params;
 
   try {
     const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/invite?token=${token}`, {
