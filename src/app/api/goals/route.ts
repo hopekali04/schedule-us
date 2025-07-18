@@ -65,17 +65,26 @@ export async function GET(request: NextRequest) {
     if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
     try {
+        const { searchParams } = new URL(request.url);
+        const categoryId = searchParams.get('categoryId');
+
         const memberQuery = await adminDb.collection('group_members').where('userId', '==', userId).get();
         const groupIds = memberQuery.docs.map(doc => doc.data().groupId);
 
         if (groupIds.length === 0) return NextResponse.json([], { status: 200 });
 
-        const goalsQuery = await adminDb.collection('goals')
+        let goalsQuery = adminDb.collection('goals')
             .where('groupId', 'in', groupIds)
-            .where('deletedAt', '==', null)
-            .get();
+            .where('deletedAt', '==', null);
+
+        // Add category filter if provided
+        if (categoryId) {
+            goalsQuery = goalsQuery.where('categoryId', '==', categoryId);
+        }
+
+        const querySnapshot = await goalsQuery.get();
         
-        const goalsWithProgress = await getGoalsWithProgress(goalsQuery.docs);
+        const goalsWithProgress = await getGoalsWithProgress(querySnapshot.docs);
         return NextResponse.json(goalsWithProgress, { status: 200 });
     } catch (error) {
         console.error('Error fetching goals:', error);

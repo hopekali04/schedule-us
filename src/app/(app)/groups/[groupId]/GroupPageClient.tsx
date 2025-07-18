@@ -8,6 +8,7 @@ import GoalCard from '@/components/goals/goal-card';
 import GoalPreviewModal from '@/components/goals/goal-preview-modal';
 import GoalModal from '@/components/goals/goal-modal';
 import ChatRoom from '@/components/chat/chat-room';
+import { InviteModal } from '@/components/groups/invite-modal';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {  Settings, Plus, Mail, MessageCircle, Target } from 'lucide-react';
@@ -25,6 +26,7 @@ export default function GroupPageClient({ initialGroup, initialGoals, initialCat
     const [previewingGoal, setPreviewingGoal] = useState<GoalWithProgress | null>(null);
     const [isGoalModalOpen, setIsGoalModalOpen] = useState(false);
     const [editingGoal, setEditingGoal] = useState<GoalWithProgress | null>(null);
+    const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
     const router = useRouter();
 
     const handleOpenNewGoalModal = () => {
@@ -61,6 +63,12 @@ export default function GroupPageClient({ initialGroup, initialGoals, initialCat
                 onClose={() => setPreviewingGoal(null)} 
                 onEdit={handleOpenEditGoalModal} 
             />
+            <InviteModal
+                isOpen={isInviteModalOpen}
+                onClose={() => setIsInviteModalOpen(false)}
+                groupId={group.id}
+                groupName={group.name === '<self>' ? 'Personal Goals' : group.name}
+            />
 
             <div className="p-4 sm:p-6 lg:p-8 space-y-8">
                 {/* Header Section */}
@@ -75,7 +83,11 @@ export default function GroupPageClient({ initialGroup, initialGoals, initialCat
                             </p>
                         </div>
                         <div className="flex items-center gap-2 mt-4 sm:mt-0">
-                            <Button variant="outline"><Mail className="mr-2 h-4 w-4" /> Invite</Button>
+                            {group.name !== '<self>' && (
+                                <Button variant="outline" onClick={() => setIsInviteModalOpen(true)}>
+                                    <Mail className="mr-2 h-4 w-4" /> Invite
+                                </Button>
+                            )}
                             <Button variant="outline" size="icon"><Settings className="h-4 w-4" /></Button>
                         </div>
                     </div>

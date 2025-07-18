@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 import { CategoryModal } from "@/components/categories/category-modal";
 import { Categories } from "@/types/types";
@@ -32,6 +33,7 @@ export function CategoriesClient() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedCategory, setSelectedCategory] = useState<Categories | null>(null);
     const [loading, setLoading] = useState(true);
+    const router = useRouter();
 
     useEffect(() => {
         fetchCategories();
@@ -48,6 +50,10 @@ export function CategoriesClient() {
         } finally {
             setLoading(false);
         }
+    };
+
+    const handleCategoryClick = (category: Categories) => {
+        router.push(`/categories/${category.id}/goals`);
     };
 
     const handleEdit = (category: Categories) => {
@@ -104,7 +110,11 @@ export function CategoriesClient() {
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {categories.map((category) => (
-                        <div key={category.id} className="p-4 border rounded-lg shadow-sm">
+                        <div 
+                            key={category.id} 
+                            className="p-4 border rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+                            onClick={() => handleCategoryClick(category)}
+                        >
                             <h2 className="text-xl font-semibold">{category.name}</h2>
                             <p>{category.description}</p>
                             <div className="flex items-center mt-2">
@@ -112,8 +122,26 @@ export function CategoriesClient() {
                                 <span className="ml-2 text-sm text-gray-500">{category.color}</span>
                             </div>
                             <div className="flex justify-end space-x-2 mt-4">
-                                <Button variant="outline" size="sm" onClick={() => handleEdit(category)}>Edit</Button>
-                                <Button variant="destructive" size="sm" onClick={() => handleDelete(category.id)}>Delete</Button>
+                                <Button 
+                                    variant="outline" 
+                                    size="sm" 
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleEdit(category);
+                                    }}
+                                >
+                                    Edit
+                                </Button>
+                                <Button 
+                                    variant="destructive" 
+                                    size="sm" 
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleDelete(category.id);
+                                    }}
+                                >
+                                    Delete
+                                </Button>
                             </div>
                         </div>
                     ))}
