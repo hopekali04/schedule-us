@@ -5,6 +5,7 @@ import { AppHeader } from "@/components/layout/header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import "../globals.css";
 import { Toaster } from "@/components/ui/toaster";
+import { Toaster as Sonner } from "sonner";
 
 export const metadata: Metadata = {
   title: "GoalTracker",
@@ -22,6 +23,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               <div className="flex flex-col h-full w-full">
                 <AppHeader />
                 <Toaster />
+                <Sonner />
                 <main className="flex-1 overflow-y-auto w-full">
                   {children}
                 </main>
