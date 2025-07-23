@@ -29,6 +29,6 @@ This is a Next.js (React) project using TypeScript and Tailwind CSS. It is inten
 6.  For any new feature, please add a new file under the `src/app/(app)` directory.
 7.  For any new API endpoint, please add a new file under the `src/app/api` directory.
 8.  For any new reusable component, please add a new file under the `src/components` directory.
-9.  For any new type, please add a new file under the `src/types/` directory.
+9.  For any new type, please add it to a relevant file in the `src/types` directory.
 10. For any new hook, please add a new file under the `src/hooks` directory.
-11. For any new helper function, please add a new file under the `src/lib` directory.
+11. For any new helper function, please add it to a relevant file in the `src/lib` directory.
