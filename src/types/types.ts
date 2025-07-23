@@ -1,12 +1,11 @@
 // lib/types.ts
-import { Timestamp } from 'firebase-admin/firestore';
 
 // Base document structure
 interface BaseDoc {
   id: string;
-  createdAt: Timestamp | Date;
-  updatedAt: Timestamp | Date;
-  deletedAt?: Timestamp | Date | null;
+  createdAt: Date;
+  updatedAt: Date;
+  deletedAt?: Date | null;
 }
 
 // Firestore Collection Types
@@ -37,8 +36,8 @@ export interface GroupMember extends BaseDoc { // Now extends BaseDoc to have it
 export interface Goal extends BaseDoc {
   name: string;
   description?: string;
-  startAt: Timestamp | Date | string;
-  endAt: Timestamp | Date | string;
+  startAt: Date;
+  endAt: Date;
   groupId: string;
   categoryId?: string;
   color?: string;
@@ -65,7 +64,7 @@ export interface Reminder extends BaseDoc {
   goalId: string;
   goalName: string;
   reminderType: 'check-progress' | 'deadline-approaching' | 'next-step' | 'milestone';
-  scheduledAt: Timestamp | Date | string;
+  scheduledAt: Date;
   isEmailSent: boolean;
   isCompleted: boolean;
 }

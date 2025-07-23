@@ -115,13 +115,17 @@ export async function GET(request: NextRequest) {
             .orderBy('scheduledAt', 'asc')
             .get();
 
-        const reminders = remindersQuery.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data(),
-            scheduledAt: doc.data().scheduledAt?.toDate?.()?.toISOString() || doc.data().scheduledAt,
-            createdAt: doc.data().createdAt?.toDate?.()?.toISOString() || doc.data().createdAt,
-            updatedAt: doc.data().updatedAt?.toDate?.()?.toISOString() || doc.data().updatedAt,
-        }));
+        const reminders = remindersQuery.docs.map(doc => {
+            const data = doc.data();
+            return {
+                id: doc.id,
+                ...data,
+                scheduledAt: data.scheduledAt?.toDate ? data.scheduledAt.toDate() : data.scheduledAt,
+                createdAt: data.createdAt?.toDate ? data.createdAt.toDate() : data.createdAt,
+                updatedAt: data.updatedAt?.toDate ? data.updatedAt.toDate() : data.updatedAt,
+                deletedAt: data.deletedAt?.toDate ? data.deletedAt.toDate() : null,
+            };
+        });
 
         return NextResponse.json({ reminders }, { status: 200 });
 
