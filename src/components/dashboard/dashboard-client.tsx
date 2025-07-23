@@ -86,6 +86,7 @@ export function DashboardClient({ initialDashboardData, initialGoals, initialGro
         <QuickActions
           onCreateGoal={handleOpenNewGoalModal}
           onJoinGroup={() => setIsGroupModalOpen(true)}
+          goals={initialGoals}
         />
 
         <div>

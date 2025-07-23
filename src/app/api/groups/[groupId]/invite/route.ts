@@ -2,6 +2,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { adminDb } from '@/lib/firebase-admin';
 import { getUserIdFromRequest } from '@/lib/auth-helper';
+import { sendInviteEmail } from '@/lib/email-service';
 import { FieldValue } from 'firebase-admin/firestore';
 
 // Generate an invite token for a group
@@ -37,6 +38,15 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       return NextResponse.json({ error: 'Group not found' }, { status: 404 });
     }
 
+    const groupData = groupDoc.data();
+
+    // Get inviter user details
+    const inviterDoc = await adminDb.collection('users').doc(userId).get();
+    const inviterData = inviterDoc.data();
+    const inviterName = inviterData?.firstName && inviterData?.lastName 
+      ? `${inviterData.firstName} ${inviterData.lastName}`
+      : inviterData?.email || 'Someone';
+
     // Generate a unique invite token
     const inviteToken = Math.random().toString(36).substring(2) + Date.now().toString(36);
 
@@ -56,9 +66,23 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     // Return the invite link
     const inviteLink = `${request.nextUrl.origin}/invite/${inviteToken}`;
 
+    // Send email invitation
+    try {
+      await sendInviteEmail({
+        email,
+        groupName: groupData?.name || 'Unknown Group',
+        inviterName,
+        inviteLink
+      });
+    } catch (emailError) {
+      console.error('Failed to send invite email:', emailError);
+      // Don't fail the whole request if email fails
+      // In production, you might want to queue this for retry
+    }
+
     return NextResponse.json({ 
       inviteLink,
-      message: 'Invite created successfully'
+      message: 'Invite created and email sent successfully'
     }, { status: 201 });
 
   } catch (error) {
