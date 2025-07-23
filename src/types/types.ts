@@ -60,6 +60,16 @@ export interface ChatMessage extends BaseDoc {
   message: string;
 }
 
+export interface Reminder extends BaseDoc {
+  userId: string;
+  goalId: string;
+  goalName: string;
+  reminderType: 'check-progress' | 'deadline-approaching' | 'next-step' | 'milestone';
+  scheduledAt: Timestamp | Date | string;
+  isEmailSent: boolean;
+  isCompleted: boolean;
+}
+
 // API Response Types (User-Friendly JSON)
 export interface GoalProgressData {
   progressPercentage: number;
