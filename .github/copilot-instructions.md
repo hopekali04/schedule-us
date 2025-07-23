@@ -1,4 +1,4 @@
-This is a Next.js (React) project using TypeScript and Tailwind CSS. It is inteded to be a scheduling application with features like categories, goals, groups, and chat. Please follow these guidelines when contributing:
+This is a Next.js (React) project using TypeScript and Tailwind CSS. It is intended to be a scheduling application with features like categories, goals, groups, and chat. Please follow these guidelines when contributing:
 
 ## Code Standards
 
