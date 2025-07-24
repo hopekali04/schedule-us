@@ -1,16 +1,24 @@
 // components/dashboard/quick-actions.tsx
 "use client";
 
+import { useState } from "react";
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
 import { Users, Target, TrendingUp, Calendar, Zap } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { GoalWithProgress } from "@/types/types";
+import { QuickUpdateModal } from "./quick-update-modal";
+import { ReminderModal } from "./reminder-modal";
 
 interface QuickActionsProps {
   onCreateGoal: () => void;
   onJoinGroup: () => void;
+  goals?: GoalWithProgress[];
 }
 
-export default function QuickActions({ onCreateGoal, onJoinGroup }: QuickActionsProps) {
+export default function QuickActions({ onCreateGoal, onJoinGroup, goals = [] }: QuickActionsProps) {
+  const [isQuickUpdateOpen, setIsQuickUpdateOpen] = useState(false);
+  const [isReminderOpen, setIsReminderOpen] = useState(false);
+
   const actions = [
     {
       title: "Create Goal",
@@ -31,45 +39,58 @@ export default function QuickActions({ onCreateGoal, onJoinGroup }: QuickActions
       description: "Log progress on existing goals",
       icon: TrendingUp,
       color: "text-green-600 bg-green-100 dark:bg-green-900/50 dark:text-green-400",
-      action: () => {}, // Add functionality later
+      action: () => setIsQuickUpdateOpen(true),
     },
     {
       title: "Set Reminder",
       description: "Never miss a milestone",
       icon: Calendar,
       color: "text-orange-600 bg-orange-100 dark:bg-orange-900/50 dark:text-orange-400",
-      action: () => {}, // Add functionality later
+      action: () => setIsReminderOpen(true),
     },
   ];
 
   return (
-    <Card className="bg-white dark:bg-zinc-900 border-none shadow-sm">
-      <CardHeader>
-        <div className="flex items-center space-x-2">
-            <Zap className="h-5 w-5 text-gray-500" />
-            <CardTitle className="text-xl">Quick Actions</CardTitle>
-        </div>
-        <CardDescription>Get things done faster with these shortcuts</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {actions.map((action) => (
-            <button
-              key={action.title}
-              onClick={action.action}
-              className="group flex flex-col items-start space-y-2 rounded-lg border bg-background p-4 text-left transition-all hover:shadow-lg hover:-translate-y-1 dark:border-zinc-800"
-            >
-              <div className={cn("flex h-10 w-10 items-center justify-center rounded-lg", action.color)}>
-                <action.icon className="h-6 w-6" />
-              </div>
-              <div className="pt-2">
-                <p className="font-semibold text-gray-900 dark:text-gray-100">{action.title}</p>
-                <p className="text-sm text-gray-500 dark:text-gray-400">{action.description}</p>
-              </div>
-            </button>
-          ))}
-        </div>
-      </CardContent>
-    </Card>
+    <>
+      <QuickUpdateModal 
+        isOpen={isQuickUpdateOpen} 
+        onClose={() => setIsQuickUpdateOpen(false)} 
+        goals={goals} 
+      />
+      <ReminderModal 
+        isOpen={isReminderOpen} 
+        onClose={() => setIsReminderOpen(false)} 
+        goals={goals} 
+      />
+      
+      <Card className="bg-white dark:bg-zinc-900 border-none shadow-sm">
+        <CardHeader>
+          <div className="flex items-center space-x-2">
+              <Zap className="h-5 w-5 text-gray-500" />
+              <CardTitle className="text-xl">Quick Actions</CardTitle>
+          </div>
+          <CardDescription>Get things done faster with these shortcuts</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {actions.map((action) => (
+              <button
+                key={action.title}
+                onClick={action.action}
+                className="group flex flex-col items-start space-y-2 rounded-lg border bg-background p-4 text-left transition-all hover:shadow-lg hover:-translate-y-1 dark:border-zinc-800"
+              >
+                <div className={cn("flex h-10 w-10 items-center justify-center rounded-lg", action.color)}>
+                  <action.icon className="h-6 w-6" />
+                </div>
+                <div className="pt-2">
+                  <p className="font-semibold text-gray-900 dark:text-gray-100">{action.title}</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">{action.description}</p>
+                </div>
+              </button>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+    </>
   );
 }

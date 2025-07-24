@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, RefreshCw, Trash2, RotateCcw } from 'lucide-react';
 import { toast } from 'sonner';
+import { Timestamp } from 'firebase/firestore';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -104,7 +105,7 @@ export function DeletedCategoriesClient() {
     }
   };
 
-  const formatDate = (timestamp: Date | { toDate(): Date } | string) => {
+  const formatDate = (timestamp: Date | Timestamp | string | { toDate(): Date } | undefined | null) => {
     if (!timestamp) return 'Unknown';
     
     let date: Date;

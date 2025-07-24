@@ -22,8 +22,9 @@ export function calculateGoalProgress(goal: Goal, steps: GoalStep[]): GoalProgre
     const progressPercentage = Math.round((completedSteps / totalSteps) * 100);
 
     const now = new Date();
-    const start = (goal.startAt as any).toDate(); // Firestore Timestamps need conversion
-    const end = (goal.endAt as any).toDate();
+    // Handle both Date objects and Firestore timestamps
+    const start = goal.startAt instanceof Date ? goal.startAt : (goal.startAt as any)?.toDate();
+    const end = goal.endAt instanceof Date ? goal.endAt : (goal.endAt as any)?.toDate();
 
     const totalDurationMs = end.getTime() - start.getTime();
     const totalDurationDays = Math.max(0, Math.ceil(totalDurationMs / (1000 * 60 * 60 * 24)));
@@ -52,13 +53,35 @@ export async function getGoalsWithProgress(goalDocs: QueryDocumentSnapshot<Docum
     if (goalDocs.length === 0) return [];
     
     const goalIds = goalDocs.map(doc => doc.id);
-    const goalsData = goalDocs.map(doc => ({ id: doc.id, ...doc.data(), deletedAt: null } as Goal));
+    const goalsData = goalDocs.map(doc => {
+        const data = doc.data();
+        return {
+            id: doc.id,
+            ...data,
+            // Convert Firestore timestamps to JavaScript Date objects
+            startAt: data.startAt?.toDate ? data.startAt.toDate() : data.startAt,
+            endAt: data.endAt?.toDate ? data.endAt.toDate() : data.endAt,
+            createdAt: data.createdAt?.toDate ? data.createdAt.toDate() : data.createdAt,
+            updatedAt: data.updatedAt?.toDate ? data.updatedAt.toDate() : data.updatedAt,
+            deletedAt: data.deletedAt?.toDate ? data.deletedAt.toDate() : null,
+        } as Goal;
+    });
 
     const stepsQuery = await adminDb.collection('goal_steps')
         .where('goalId', 'in', goalIds)
         .where('deletedAt', '==', null) // Only get non-deleted steps
         .get();
-    const allSteps = stepsQuery.docs.map(doc => ({ id: doc.id, ...doc.data() } as GoalStep));
+    const allSteps = stepsQuery.docs.map(doc => {
+        const data = doc.data();
+        return {
+            id: doc.id,
+            ...data,
+            // Convert Firestore timestamps to JavaScript Date objects for steps too
+            createdAt: data.createdAt?.toDate ? data.createdAt.toDate() : data.createdAt,
+            updatedAt: data.updatedAt?.toDate ? data.updatedAt.toDate() : data.updatedAt,
+            deletedAt: data.deletedAt?.toDate ? data.deletedAt.toDate() : null,
+        } as GoalStep;
+    });
 
     return goalsData.map(goal => {
         const relevantSteps = allSteps.filter(step => step.goalId === goal.id);

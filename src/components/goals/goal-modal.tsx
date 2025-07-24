@@ -58,10 +58,17 @@ export default function GoalModal({ isOpen, onClose, goal, groups, categories }:
   const onSubmit = async (data: z.infer<typeof goalSchema>) => {
     setIsLoading(true);
     try {
+      // Convert string dates to Date objects for the API
+      const apiData = {
+        ...data,
+        startAt: new Date(data.startAt),
+        endAt: new Date(data.endAt),
+      };
+      
       if (goal) {
-        await updateGoal(goal.id, data);
+        await updateGoal(goal.id, apiData);
       } else {
-        await createGoal(data);
+        await createGoal(apiData);
       }
       onClose(); // Parent will call router.refresh()
     } catch (error) {
