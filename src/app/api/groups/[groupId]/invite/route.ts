@@ -56,7 +56,15 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
 
     // Send the invite email
     const inviteLink = `${request.nextUrl.origin}/invite/${inviteToken}`;
-    await sendInviteEmail(email, inviteLink);
+    try {
+      await sendInviteEmail(email, inviteLink);
+    } catch (emailError) {
+      console.error('Error sending invite email:', emailError);
+      return NextResponse.json({
+        inviteLink,
+        message: 'Invite created, but failed to send email. Please try again later.'
+      }, { status: 500 });
+    }
 
     return NextResponse.json({ 
       inviteLink,
