@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 // app/api/dashboard/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { adminDb } from '@/lib/firebase-admin';
@@ -57,7 +56,7 @@ export async function GET(request: NextRequest) {
                 overallProgressPercentage: inProgressCount > 0 ? Math.round(totalProgress / inProgressCount) : 0,
             },
             upcomingDeadlines: allGoals.filter(goal => {
-                const endDate = (goal.endAt as any).toDate();
+                const endDate = goal.endAt instanceof Date ? goal.endAt : new Date(goal.endAt);
                 return goal.status !== 'Completed' && goal.status !== 'Closed' && endDate <= oneWeekFromNow && endDate > new Date();
             }),
             groupPerformance: groups.map(group => {

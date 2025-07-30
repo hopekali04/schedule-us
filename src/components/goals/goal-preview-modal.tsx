@@ -8,8 +8,8 @@ import { Button } from "../ui/button";
 import { Progress } from "../ui/progress";
 import { Checkbox } from "../ui/checkbox";
 import { Label } from "../ui/label";
-import { Calendar, Edit, Flag, Trash2 } from "lucide-react";
-import { deleteGoal, updateGoalStep } from "@/lib/api";
+import { Calendar, Edit, Flag, Trash2, CheckCircle } from "lucide-react";
+import { deleteGoal, updateGoal, updateGoalStep } from "@/lib/api";
 import { useRouter } from "next/navigation";
 import { Key, ReactElement, JSXElementConstructor, ReactNode, ReactPortal } from "react";
 
@@ -45,6 +45,16 @@ export default function GoalPreviewModal({ goal, onClose, onEdit }: GoalPreviewM
     }
   };
 
+  const handleMarkComplete = async () => {
+    try {
+        await updateGoal(goal.id, { isCompleted: true });
+        onClose();
+        router.refresh();
+    } catch (error) {
+        console.error("Failed to mark goal as complete", error);
+    }
+  };
+
   return (
     <Dialog open={!!goal} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md">
@@ -64,6 +74,18 @@ export default function GoalPreviewModal({ goal, onClose, onEdit }: GoalPreviewM
             <div className="flex items-center gap-1"><Flag className="h-3 w-3"/><span>{`${goal.completedSteps}/${goal.totalSteps} steps`}</span></div>
             <div className="flex items-center gap-1"><Calendar className="h-3 w-3"/><span>Due in {goal.daysLeft} days</span></div>
           </div>
+          
+          {/* Start and End Dates */}
+          <div className="grid grid-cols-2 gap-4 text-sm">
+            <div>
+              <Label className="text-xs text-muted-foreground">Start Date</Label>
+              <p className="font-medium">{new Date(goal.startAt as Date).toLocaleDateString()}</p>
+            </div>
+            <div>
+              <Label className="text-xs text-muted-foreground">End Date</Label>
+              <p className="font-medium">{new Date(goal.endAt as Date).toLocaleDateString()}</p>
+            </div>
+          </div>
           <div className="space-y-3">
             <Label>Steps</Label>
             {goal.steps
@@ -80,7 +102,14 @@ export default function GoalPreviewModal({ goal, onClose, onEdit }: GoalPreviewM
         </div>
         <DialogFooter className="sm:justify-between">
           <Button variant="ghost" size="sm" className="text-red-600 hover:text-red-700 hover:bg-red-50" onClick={handleDelete}><Trash2 className="mr-2 h-4 w-4"/> Delete</Button>
-          <Button variant="outline" size="sm" onClick={() => onEdit(goal)}><Edit className="mr-2 h-4 w-4" /> Edit Goal</Button>
+          <div className="flex gap-2">
+            {goal.status !== 'Completed' && (
+              <Button variant="default" size="sm" className="bg-green-600 hover:bg-green-700" onClick={handleMarkComplete}>
+                <CheckCircle className="mr-2 h-4 w-4" /> Mark Complete
+              </Button>
+            )}
+            <Button variant="outline" size="sm" onClick={() => onEdit(goal)}><Edit className="mr-2 h-4 w-4" /> Edit Goal</Button>
+          </div>
         </DialogFooter>
       </DialogContent>
     </Dialog>
