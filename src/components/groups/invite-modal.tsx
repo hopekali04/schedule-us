@@ -156,7 +156,8 @@ export function InviteModal({ isOpen, onClose, groupId, groupName }: InviteModal
           <div className="text-sm text-gray-600 bg-blue-50 p-3 rounded-lg">
             <p className="font-medium mb-1">How it works:</p>
             <ul className="text-xs space-y-1">
-              <li>• Send the generated link to the person you want to invite</li>
+              <li>• The Invite Link has been sent to the invited person, and They can accept it</li>
+              <li>• OR, Send the generated link to the person you want to invite</li>
               <li>• They&apos;ll see group details and can accept or decline</li>
               <li>• The link expires in 7 days for security</li>
             </ul>
