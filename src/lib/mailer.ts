@@ -2,6 +2,10 @@
 
 import { Resend } from 'resend';
 
+if (!process.env.RESEND_API_KEY) {
+  throw new Error('RESEND_API_KEY environment variable is not defined');
+}
+
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function sendInviteEmail(email: string, inviteLink: string): Promise<void> {
@@ -40,8 +44,7 @@ export async function sendInviteEmail(email: string, inviteLink: string): Promis
 
     console.log('Email sent successfully:', data?.id);
   } catch (error) {
-    console.error('Error sending email:', error);
-    throw new Error('Failed to send invite email');
+    throw new Error(`Failed to send invite email: ${error instanceof Error ? error.message : String(error)}`);
   }
 }
 
