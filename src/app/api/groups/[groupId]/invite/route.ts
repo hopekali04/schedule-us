@@ -62,8 +62,8 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       console.error('Error sending invite email:', emailError);
       return NextResponse.json({
         inviteLink,
-        message: 'Invite created, but failed to send email. Please try again later.'
-      }, { status: 500 });
+        message: 'Invite created successfully. Email delivery failed, but you can share the link manually.'
+      }, { status: 201 });
     }
 
     return NextResponse.json({ 
