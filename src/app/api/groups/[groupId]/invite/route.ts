@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { adminDb } from '@/lib/firebase-admin';
 import { getUserIdFromRequest } from '@/lib/auth-helper';
 import { FieldValue } from 'firebase-admin/firestore';
+import { sendInviteEmail } from '@/lib/mailer';
 
 // Generate an invite token for a group
 export async function POST(request: NextRequest, { params }: { params: Promise<{ groupId: string }> }) {
@@ -53,8 +54,17 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       updatedAt: FieldValue.serverTimestamp(),
     });
 
-    // Return the invite link
+    // Send the invite email
     const inviteLink = `${request.nextUrl.origin}/invite/${inviteToken}`;
+    try {
+      await sendInviteEmail(email, inviteLink);
+    } catch (emailError) {
+      console.error('Error sending invite email:', emailError);
+      return NextResponse.json({
+        inviteLink,
+        message: 'Invite created successfully. Email delivery failed, but you can share the link manually.'
+      }, { status: 201 });
+    }
 
     return NextResponse.json({ 
       inviteLink,
