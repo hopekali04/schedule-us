@@ -1,6 +1,7 @@
 import { EditCategoryClient } from './EditCategoryClient';
 import { adminDb } from '@/lib/firebase-admin';
 import { Categories } from '@/types/types';
+import { Timestamp } from 'firebase-admin/firestore';
 
 interface EditCategoryPageProps {
   params: Promise<{ categoryId: string }>;
@@ -15,6 +16,13 @@ interface SerializableCategory {
   createdAt: string;
   updatedAt: string;
   deletedAt?: string | null;
+}
+
+// Helper function to convert timestamp to ISO string
+function timestampToISOString(timestamp: Date | Timestamp | undefined): string {
+  if (!timestamp) return new Date().toISOString();
+  if (timestamp instanceof Date) return timestamp.toISOString();
+  return (timestamp as Timestamp).toDate().toISOString();
 }
 
 async function getCategoryData(categoryId: string): Promise<SerializableCategory | null> {
@@ -33,9 +41,9 @@ async function getCategoryData(categoryId: string): Promise<SerializableCategory
       name: data.name,
       description: data.description,
       color: data.color,
-      createdAt: data.createdAt instanceof Date ? data.createdAt.toISOString() : data.createdAt.toDate().toISOString(),
-      updatedAt: data.updatedAt instanceof Date ? data.updatedAt.toISOString() : data.updatedAt.toDate().toISOString(),
-      deletedAt: data.deletedAt ? (data.deletedAt instanceof Date ? data.deletedAt.toISOString() : data.deletedAt.toDate().toISOString()) : null,
+      createdAt: timestampToISOString(data.createdAt),
+      updatedAt: timestampToISOString(data.updatedAt),
+      deletedAt: data.deletedAt ? timestampToISOString(data.deletedAt) : null,
     };
   } catch (error) {
     console.error('Error fetching category:', error);
