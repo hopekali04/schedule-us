@@ -39,7 +39,7 @@ export async function sendInviteEmail(email: string, inviteLink: string): Promis
 
     if (error) {
       console.error('Error sending email:', error);
-      throw new Error('Failed to send invite email');
+      throw new Error(`Failed to send invite email: ${error instanceof Error ? error.message : String(error)}`);
     }
 
     console.log('Email sent successfully:', data?.id);
