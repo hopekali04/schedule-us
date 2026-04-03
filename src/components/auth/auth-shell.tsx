@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { Sparkles, CheckCircle2 } from "lucide-react";
+import { CheckCircle2 } from "lucide-react";
 import type { AuthShellContent } from "@/types/types";
 
 interface AuthShellProps {
@@ -19,9 +19,6 @@ export default function AuthShell({ content, children }: AuthShellProps) {
       <div className="relative mx-auto grid min-h-screen w-full max-w-6xl grid-cols-1 px-6 py-10 md:grid-cols-2 md:items-center md:gap-8 lg:px-12">
         <section className="mb-8 rounded-3xl border border-white/15 bg-white/10 p-6 text-white backdrop-blur md:mb-0 md:p-10">
           <div className="mb-8 flex items-center gap-2">
-            <div className="rounded-full bg-white/15 p-2">
-              <Sparkles className="h-4 w-4 text-cyan-200" />
-            </div>
             <p className="text-sm font-medium text-cyan-100">
               {content.eyebrow}
             </p>
