@@ -28,7 +28,8 @@ export async function GET(request: NextRequest) {
     const inviteData = inviteDoc.data();
 
     // Check if invite has expired
-    if (inviteData.expiresAt.toDate() < new Date()) {
+    const expiresAt = inviteData.expiresAt?.toDate ? inviteData.expiresAt.toDate() : new Date(inviteData.expiresAt);
+    if (expiresAt < new Date()) {
       return NextResponse.json({ error: 'Invite has expired' }, { status: 410 });
     }
 
@@ -81,7 +82,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if invite has expired
-    if (inviteData.expiresAt.toDate() < new Date()) {
+    const expiresAt2 = inviteData.expiresAt?.toDate ? inviteData.expiresAt.toDate() : new Date(inviteData.expiresAt);
+    if (expiresAt2 < new Date()) {
       return NextResponse.json({ error: 'Invite has expired' }, { status: 410 });
     }
 
