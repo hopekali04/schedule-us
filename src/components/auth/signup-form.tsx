@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { FormEvent, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { AlertCircle, Loader2 } from "lucide-react";
+import { AlertCircle, Loader2, Mail, Lock } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -126,46 +126,67 @@ const SignUpForm = () => {
     <form onSubmit={handleSignUp} className="space-y-4">
       <div className="space-y-2">
         <Label htmlFor="email">Email</Label>
-        <Input
-          id="email"
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-          disabled={isBusy}
-          autoComplete="email"
-          placeholder="m@example.com"
-        />
+        <div className="relative">
+          <Mail
+            className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500"
+            aria-hidden="true"
+          />
+          <Input
+            id="email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            disabled={isBusy}
+            autoComplete="email"
+            placeholder="m@example.com"
+            className="pl-10"
+          />
+        </div>
       </div>
 
       <div className="space-y-2">
         <Label htmlFor="password">Password</Label>
-        <Input
-          id="password"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          disabled={isBusy}
-          autoComplete="new-password"
-          minLength={6}
-          placeholder="At least 6 characters"
-        />
+        <div className="relative">
+          <Lock
+            className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500"
+            aria-hidden="true"
+          />
+          <Input
+            id="password"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            disabled={isBusy}
+            autoComplete="new-password"
+            minLength={6}
+            placeholder="At least 6 characters"
+            className="pl-10"
+          />
+        </div>
       </div>
 
       <div className="space-y-2">
         <Label htmlFor="confirmPassword">Confirm password</Label>
-        <Input
-          id="confirmPassword"
-          type="password"
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-          required
-          disabled={isBusy}
-          autoComplete="new-password"
-          minLength={6}
-          placeholder="Re-enter your password"
-        />
+        <div className="relative">
+          <Lock
+            className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500"
+            aria-hidden="true"
+          />
+          <Input
+            id="confirmPassword"
+            type="password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            required
+            disabled={isBusy}
+            autoComplete="new-password"
+            minLength={6}
+            placeholder="Re-enter your password"
+            className="pl-10"
+          />
+        </div>
       </div>
 
       {feedback && (
