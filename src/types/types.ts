@@ -1,5 +1,5 @@
 // lib/types.ts
-import { Timestamp } from 'firebase-admin/firestore';
+import { Timestamp } from "firebase-admin/firestore";
 
 // Base document structure
 interface BaseDoc {
@@ -10,7 +10,7 @@ interface BaseDoc {
 }
 
 // Firestore Collection Types
-export interface User extends Omit<BaseDoc, 'id'> {
+export interface User extends Omit<BaseDoc, "id"> {
   email: string;
   firstName?: string;
   lastName?: string;
@@ -26,10 +26,11 @@ export interface Group extends BaseDoc {
 export interface Categories extends BaseDoc {
   name: string;
   description?: string;
-  color?: string; 
+  color?: string;
 }
 
-export interface GroupMember extends BaseDoc { // Now extends BaseDoc to have its own ID
+export interface GroupMember extends BaseDoc {
+  // Now extends BaseDoc to have its own ID
   groupId: string;
   userId: string;
 }
@@ -43,7 +44,7 @@ export interface Goal extends BaseDoc {
   categoryId?: string;
   color?: string;
   isCompleted: boolean; // NEW
-  isClosed: boolean;    // NEW
+  isClosed: boolean; // NEW
 }
 
 export interface GoalStep extends BaseDoc {
@@ -67,7 +68,13 @@ export interface GoalProgressData {
   totalSteps: number;
   daysLeft: number;
   totalDurationDays: number;
-  status: 'Completed' | 'On Track' | 'At Risk' | 'Overdue' | 'Not Started' | 'Closed';
+  status:
+    | "Completed"
+    | "On Track"
+    | "At Risk"
+    | "Overdue"
+    | "Not Started"
+    | "Closed";
 }
 
 export interface GoalWithProgress extends Goal, GoalProgressData {
@@ -90,5 +97,24 @@ export interface DashboardData {
     groupId: string;
     groupName: string;
     progressPercentage: number;
-  }>
+  }>;
+}
+
+export type AuthScreenVariant = "signin" | "signup" | "forgot-password";
+
+export interface AuthShellHighlight {
+  title: string;
+  description: string;
+}
+
+export interface AuthShellContent {
+  eyebrow: string;
+  title: string;
+  description: string;
+  highlights: AuthShellHighlight[];
+}
+
+export interface AuthFeedback {
+  type: "error" | "success" | "info";
+  message: string;
 }
