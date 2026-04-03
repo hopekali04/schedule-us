@@ -2,35 +2,29 @@
 
 import Link from "next/link";
 import { FormEvent, useState } from "react";
-import { AlertCircle, Loader2, Mail } from "lucide-react";
+import { Loader2, Mail } from "lucide-react";
 import { sendPasswordResetEmail } from "firebase/auth";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { auth } from "@/lib/firebaseConfig";
-import type { AuthFeedback } from "@/types/types";
+import { authToast } from "@/lib/auth-toast";
 
 export default function ForgotPasswordForm() {
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [feedback, setFeedback] = useState<AuthFeedback | null>(null);
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
-    setFeedback(null);
     setIsLoading(true);
 
     try {
       await sendPasswordResetEmail(auth, email);
-      setFeedback({
-        type: "success",
-        message: "Reset link sent. Check your inbox and spam folder.",
-      });
+      authToast.success("Reset link sent. Check your inbox and spam folder.");
     } catch {
-      setFeedback({
-        type: "error",
-        message: "Unable to send reset email right now. Please try again.",
-      });
+      authToast.error(
+        "Unable to send reset email right now. Please try again.",
+      );
     } finally {
       setIsLoading(false);
     }
@@ -58,19 +52,6 @@ export default function ForgotPasswordForm() {
           />
         </div>
       </div>
-
-      {feedback && (
-        <div
-          className={`flex items-start gap-2 rounded-md border px-3 py-2 text-sm ${
-            feedback.type === "success"
-              ? "border-green-200 bg-green-50 text-green-700"
-              : "border-red-200 bg-red-50 text-red-700"
-          }`}
-        >
-          <AlertCircle className="mt-0.5 h-4 w-4" aria-hidden="true" />
-          <p>{feedback.message}</p>
-        </div>
-      )}
 
       <Button type="submit" className="w-full" disabled={isLoading}>
         {isLoading ? (

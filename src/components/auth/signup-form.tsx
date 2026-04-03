@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { FormEvent, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { AlertCircle, Loader2, Mail, Lock } from "lucide-react";
+import { Loader2, Mail, Lock } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -13,14 +13,13 @@ import {
   signInWithPopup,
 } from "firebase/auth";
 import { auth } from "@/lib/firebaseConfig";
-import type { AuthFeedback } from "@/types/types";
+import { authToast } from "@/lib/auth-toast";
 import GoogleIcon from "./google-icon";
 
 const SignUpForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [feedback, setFeedback] = useState<AuthFeedback | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const router = useRouter();
@@ -61,13 +60,9 @@ const SignUpForm = () => {
 
   const handleSignUp = async (e: FormEvent) => {
     e.preventDefault();
-    setFeedback(null);
 
     if (password !== confirmPassword) {
-      setFeedback({
-        type: "error",
-        message: "Passwords do not match. Please re-enter both fields.",
-      });
+      authToast.error("Passwords do not match. Please re-enter both fields.");
       return;
     }
 
@@ -82,39 +77,32 @@ const SignUpForm = () => {
       const user = userCredential.user;
       const idToken = await user.getIdToken();
       await createSession(idToken);
+      authToast.success("Account created successfully.");
       router.refresh();
       router.push("/");
     } catch (error: unknown) {
-      setFeedback({
-        type: "error",
-        message: resolveFirebaseError(
-          error,
-          "Unable to create your account right now.",
-        ),
-      });
+      authToast.error(
+        resolveFirebaseError(error, "Unable to create your account right now."),
+      );
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleGoogleSignUp = async () => {
-    setFeedback(null);
     setIsGoogleLoading(true);
 
     try {
       const userCredential = await signInWithPopup(auth, provider);
       const idToken = await userCredential.user.getIdToken();
       await createSession(idToken);
+      authToast.success("Account created with Google.");
       router.refresh();
       router.push("/");
     } catch (error: unknown) {
-      setFeedback({
-        type: "error",
-        message: resolveFirebaseError(
-          error,
-          "Google sign up failed. Please try again.",
-        ),
-      });
+      authToast.error(
+        resolveFirebaseError(error, "Google sign up failed. Please try again."),
+      );
     } finally {
       setIsGoogleLoading(false);
     }
@@ -188,21 +176,6 @@ const SignUpForm = () => {
           />
         </div>
       </div>
-
-      {feedback && (
-        <div
-          className={`flex items-start gap-2 rounded-md border px-3 py-2 text-sm ${
-            feedback.type === "error"
-              ? "border-red-200 bg-red-50 text-red-700"
-              : feedback.type === "success"
-                ? "border-green-200 bg-green-50 text-green-700"
-                : "border-slate-200 bg-slate-50 text-slate-700"
-          }`}
-        >
-          <AlertCircle className="mt-0.5 h-4 w-4" aria-hidden="true" />
-          <p>{feedback.message}</p>
-        </div>
-      )}
 
       <Button type="submit" className="w-full" disabled={isBusy}>
         {isLoading ? (
