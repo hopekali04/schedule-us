@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { FormEvent, useState } from "react";
-import { AlertCircle, Loader2 } from "lucide-react";
+import { AlertCircle, Loader2, Mail } from "lucide-react";
 import { sendPasswordResetEmail } from "firebase/auth";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -40,16 +40,23 @@ export default function ForgotPasswordForm() {
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="space-y-2">
         <Label htmlFor="email">Email</Label>
-        <Input
-          id="email"
-          type="email"
-          value={email}
-          onChange={(event) => setEmail(event.target.value)}
-          autoComplete="email"
-          placeholder="you@company.com"
-          disabled={isLoading}
-          required
-        />
+        <div className="relative">
+          <Mail
+            className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500"
+            aria-hidden="true"
+          />
+          <Input
+            id="email"
+            type="email"
+            value={email}
+            onChange={(event) => setEmail(event.target.value)}
+            autoComplete="email"
+            placeholder="you@company.com"
+            disabled={isLoading}
+            required
+            className="pl-10"
+          />
+        </div>
       </div>
 
       {feedback && (
