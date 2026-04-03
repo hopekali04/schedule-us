@@ -46,10 +46,19 @@
   - Proper error handling for popup-blocked and user-cancelled flows
   - Session creation matches email/password flow
 
-- **Enhanced Feedback System**
-  - `AuthFeedback` type with error/success/info states
-  - Color-coded alert boxes (red/green/slate)
-  - Dismissible feedback with contextual messaging
+### Toast System Implementation
+
+- **Dark Theme Design**
+  - Background: Slate-900 with border-slate-700
+  - Colored left segment (12px wide) with relevant icon
+  - Inline message in slate-100 text
+  - Smooth auto-dismiss with duration: success/info (3.5–4s), error (7s)
+
+- **Integration Pattern**
+  - All auth forms now use centralized `authToast` utility
+  - No inline feedback panels; unified toast experience across signin/signup/reset
+  - Toast mounted globally in auth layout via `<Toaster />` component
+  - Consistent feedback UX: "Account created!", "Invalid password", "Sending reset link...", etc.
 
 ### Types & Configuration
 
@@ -70,6 +79,12 @@
   - Prevents build failure when `value` could be `undefined`
   - Maintains percentage formatting on pie chart tooltips
 
+- **Toast Title Type Collision** (in `src/components/ui/use-toast.ts`)
+  - Fixed `ToasterToast` type definition by using `Omit<ToastProps, "title">` before redefining `title`
+  - Radix native `title: string` was conflicting with custom `title: React.ReactNode`
+  - Enables JSX content (icons, formatted messages) to be safely passed as toast title
+  - Result: Universal dark toast with rich UI structure is now fully type-safe
+
 ---
 
 ## Files Modified/Created
@@ -80,15 +95,18 @@
 - `src/components/auth/google-icon.tsx` — Google logo SVG icon
 - `src/components/auth/forgot-password-form.tsx` — Password reset form
 - `src/app/(auth)/auth/forgot-password/page.tsx` — Reset password page
+- `src/lib/auth-toast.tsx` — Universal auth toast utility with dark theme design
 
 ### Updated Files
 
-- `src/components/auth/signin-form.tsx` — Redesigned with icons, Google auth, reset action
-- `src/components/auth/signup-form.tsx` — Redesigned with icons, Google auth, confirm password
+- `src/components/auth/signin-form.tsx` — Redesigned with icons, Google auth, reset action, integrated `authToast` feedback
+- `src/components/auth/signup-form.tsx` — Redesigned with icons, Google auth, confirm password, integrated `authToast` feedback
 - `src/app/(auth)/auth/signin/page.tsx` — Integrated auth shell, updated copy
 - `src/app/(auth)/auth/signup/page.tsx` — Integrated auth shell, updated copy
+- `src/app/(auth)/layout.tsx` — Added Toaster component to enable toast rendering across all auth pages
 - `src/types/types.ts` — Added auth-specific type definitions
 - `src/components/dashboard/charts-grid.tsx` — Fixed Recharts formatter type
+- `src/components/ui/use-toast.ts` — Fixed `ToasterToast` type definition to support JSX content as toast title
 
 ---
 
