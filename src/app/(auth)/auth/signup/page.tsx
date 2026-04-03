@@ -1,19 +1,47 @@
-import SignUpForm from '@/components/auth/signup-form'; // Adjust path if needed
+import AuthShell from "@/components/auth/auth-shell";
+import SignUpForm from "@/components/auth/signup-form";
+import type { AuthShellContent } from "@/types/types";
+
+const signUpContent: AuthShellContent = {
+  eyebrow: "Schedule Us",
+  title: "Build momentum with goals that stay organized.",
+  description:
+    "Create your account to plan goals by category, collaborate in groups, and keep progress measurable week after week.",
+  highlights: [
+    {
+      title: "Structure that scales",
+      description:
+        "Organize goals by categories and groups so priorities stay clear as work grows.",
+    },
+    {
+      title: "Progress you can trust",
+      description:
+        "Track completion with transparent status indicators and clear next steps.",
+    },
+    {
+      title: "One secure workspace",
+      description:
+        "Sign in with email or Google and continue where you left off on any device.",
+    },
+  ],
+};
 
 const SignUpPage = () => {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-100">
-      <div className="w-full max-w-md space-y-6 rounded bg-white p-8 shadow-md">
-        <h2 className="text-center text-2xl font-bold">Create an Account</h2>
-        <SignUpForm />
-        <p className="text-center text-sm text-gray-600">
-          Already have an account?{' '}
-          <a href="/auth/signin" className="text-blue-500 hover:underline">
-            Sign In
-          </a>
+    <AuthShell content={signUpContent}>
+      <div className="space-y-2">
+        <h2 className="text-2xl font-semibold text-slate-900">
+          Create account
+        </h2>
+        <p className="text-sm text-slate-600">
+          Start with email and password or create your account with Google.
         </p>
       </div>
-    </div>
+
+      <div className="mt-6">
+        <SignUpForm />
+      </div>
+    </AuthShell>
   );
 };
 
