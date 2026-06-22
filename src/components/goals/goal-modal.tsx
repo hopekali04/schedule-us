@@ -14,7 +14,8 @@ import { Label } from "../ui/label";
 import { Textarea } from "../ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import ColorPicker from "../shared/color-picker";
-import { PlusCircle, Trash2 } from "lucide-react";
+import { PlusCircle, Trash2, Sparkles, X, Loader2 } from "lucide-react";
+import { useAISuggestions, type AISuggestion } from "@/hooks/use-ai-suggestions";
 // import { useRouter } from "next/navigation";
 
 const goalSchema = z.object({
@@ -38,8 +39,10 @@ interface GoalModalProps {
 
 export default function GoalModal({ isOpen, onClose, goal, groups, categories }: GoalModalProps) {
   const [isLoading, setIsLoading] = useState(false);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const { suggestions, isLoading: aiLoading, error: aiError, fetchSuggestions, clearSuggestions } = useAISuggestions();
 //   const router = useRouter();
-  const { register, handleSubmit, control, formState: { errors } } = useForm<z.infer<typeof goalSchema>>({
+  const { register, handleSubmit, control, formState: { errors }, setValue } = useForm<z.infer<typeof goalSchema>>({
     resolver: zodResolver(goalSchema),
     defaultValues: {
       name: goal?.name || "",
@@ -53,7 +56,30 @@ export default function GoalModal({ isOpen, onClose, goal, groups, categories }:
     },
   });
 
-  const { fields, append, remove } = useFieldArray({ control, name: "steps" });
+  const { fields, append, remove, replace } = useFieldArray({ control, name: "steps" });
+
+  const handleGetAISuggestions = async () => {
+    setShowSuggestions(true);
+    await fetchSuggestions();
+  };
+
+  const handleSuggestionSelect = (suggestion: AISuggestion) => {
+    // Fill form fields with the selected suggestion
+    setValue("name", suggestion.name);
+    setValue("description", suggestion.description);
+    
+    // Replace all steps with the suggestion steps
+    const formattedSteps = suggestion.steps.map(step => ({ description: step }));
+    replace(formattedSteps);
+    
+    // Hide suggestions after selection
+    setShowSuggestions(false);
+  };
+
+  const handleCloseSuggestions = () => {
+    setShowSuggestions(false);
+    clearSuggestions();
+  };
 
   const onSubmit = async (data: z.infer<typeof goalSchema>) => {
     setIsLoading(true);
@@ -77,10 +103,78 @@ export default function GoalModal({ isOpen, onClose, goal, groups, categories }:
         <DialogHeader><DialogTitle>{goal ? "Edit Goal" : "Create New Goal"}</DialogTitle></DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 py-4 max-h-[80vh] overflow-y-auto pr-6">
           <div className="space-y-1">
-            <Label htmlFor="name">Goal Name</Label>
+            <div className="flex items-center justify-between">
+              <Label htmlFor="name">Goal Name</Label>
+              {!goal && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={handleGetAISuggestions}
+                  disabled={aiLoading}
+                  className="text-blue-600 border-blue-200 hover:bg-blue-50"
+                >
+                  {aiLoading ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  ) : (
+                    <Sparkles className="mr-2 h-4 w-4" />
+                  )}
+                  AI Suggestions
+                </Button>
+              )}
+            </div>
             <Input id="name" {...register("name")} />
             {errors.name && <p className="text-red-500 text-sm">{errors.name.message}</p>}
           </div>
+
+          {/* AI Suggestions Display */}
+          {showSuggestions && (
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 space-y-3">
+              <div className="flex items-center justify-between">
+                <h4 className="text-sm font-medium text-blue-800">AI Goal Suggestions</h4>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleCloseSuggestions}
+                  className="h-8 w-8 p-0 hover:bg-blue-100"
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+              
+              {aiError && (
+                <div className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-md p-2">
+                  {aiError}
+                </div>
+              )}
+              
+              {suggestions.length > 0 && (
+                <div className="space-y-2 max-h-64 overflow-y-auto">
+                  {suggestions.map((suggestion, index) => (
+                    <div
+                      key={index}
+                      className="bg-white border border-blue-200 rounded-md p-3 cursor-pointer hover:bg-blue-100 hover:border-blue-300 transition-colors"
+                      onClick={() => handleSuggestionSelect(suggestion)}
+                    >
+                      <h5 className="font-medium text-gray-900 text-sm">{suggestion.name}</h5>
+                      <p className="text-xs text-gray-600 mt-1">{suggestion.description}</p>
+                      <div className="text-xs text-gray-500 mt-2">
+                        {suggestion.steps.length} steps included
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+              
+              {aiLoading && (
+                <div className="flex items-center justify-center py-4 text-blue-600">
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Generating suggestions...
+                </div>
+              )}
+            </div>
+          )}
           <div className="space-y-1">
             <Label htmlFor="description">Description (Optional)</Label>
             <Textarea id="description" {...register("description")} />
